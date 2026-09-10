@@ -58,18 +58,18 @@ This roadmap consolidates the product specifications, technical architecture, an
 - [x] JSON formatter and minifier
 - [x] Base64 encoder and decoder
 - [x] URL parser
-- [ ] JWT decoder
-- [ ] UUID generator
-- [ ] Hash generator
-- [ ] Timestamp converter
+- [x] JWT decoder
+- [x] UUID generator
+- [x] Hash generator
+- [x] Timestamp converter
 - [x] Quick tools widget
-- [ ] Calculator
-- [ ] Timer and stopwatch
-- [ ] Password generator
-- [ ] Unit converter
-- [ ] Text statistics
-- [ ] QR code generator
-- [ ] Countdown timer
+- [x] Calculator
+- [x] Timer and stopwatch
+- [x] Password generator
+- [x] Unit converter
+- [x] Text statistics
+- [x] QR code generator
+- [x] Countdown timer
 
 ### Search and browser organization
 - [ ] Search across bookmarks, tabs, history, notes, and tasks

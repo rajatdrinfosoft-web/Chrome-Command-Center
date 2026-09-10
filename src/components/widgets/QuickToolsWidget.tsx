@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
-import { JsonFormatter } from './tools/JsonFormatter'; // Need to create this
+import { JsonFormatter } from './tools/JsonFormatter';
 import { Base64Converter } from './tools/Base64Converter';
 import { UrlParser } from './tools/UrlParser';
+import { JwtDecoder } from './tools/JwtDecoder';
+import { UuidGenerator } from './tools/UuidGenerator';
+import { HashGenerator } from './tools/HashGenerator';
+import { TimestampConverter } from './tools/TimestampConverter';
+import { Calculator } from './tools/Calculator';
+import { PasswordGenerator } from './tools/PasswordGenerator';
+import { UnitConverter } from './tools/UnitConverter';
+import { TextStatistics } from './tools/TextStatistics';
+import { QrGenerator } from './tools/QrGenerator';
+import { CountdownTimer } from './tools/CountdownTimer';
 
 export const QuickToolsWidget = () => {
   const [activeTool, setActiveTool] = useState<string | null>(null);
@@ -10,6 +20,16 @@ export const QuickToolsWidget = () => {
     { id: 'json', name: 'JSON', component: <JsonFormatter /> },
     { id: 'base64', name: 'Base64', component: <Base64Converter /> },
     { id: 'url', name: 'URL', component: <UrlParser /> },
+    { id: 'jwt', name: 'JWT', component: <JwtDecoder /> },
+    { id: 'uuid', name: 'UUID', component: <UuidGenerator /> },
+    { id: 'hash', name: 'Hash', component: <HashGenerator /> },
+    { id: 'time', name: 'Time', component: <TimestampConverter /> },
+    { id: 'calc', name: 'Calc', component: <Calculator /> },
+    { id: 'pass', name: 'Pass', component: <PasswordGenerator /> },
+    { id: 'unit', name: 'Unit', component: <UnitConverter /> },
+    { id: 'text', name: 'Stats', component: <TextStatistics /> },
+    { id: 'qr', name: 'QR', component: <QrGenerator /> },
+    { id: 'cdown', name: 'Timer', component: <CountdownTimer /> },
   ];
 
   return (
