@@ -8,9 +8,9 @@ This roadmap consolidates the product specifications, technical architecture, an
 - [x] Vite, React, and TypeScript project setup
 - [x] Manifest V3 extension manifest
 - [x] Background service worker entry point
-- [ ] Centralize extension messaging through an `ExtensionBridge`
-- [ ] Complete provider lifecycle and graceful error handling
-- [ ] Add automated test tooling and service tests
+- [x] Centralize extension messaging through an `ExtensionBridge`
+- [x] Complete provider lifecycle and graceful error handling
+- [x] Add automated test tooling and service tests
 
 ### MVP features
 - [x] Clock, date, and greeting widget
@@ -21,12 +21,21 @@ This roadmap consolidates the product specifications, technical architecture, an
 - [x] Chrome history provider and widget
 - [x] Local tasks widget with create, update, complete, and delete flows
 - [x] Local notes widget
-- [ ] Rich text or Markdown note rendering
-- [ ] Basic settings UI and persisted preferences
+### MVP features
+- [x] Clock, date, and greeting widget
+- [x] Universal search input
+- [x] Chrome bookmarks provider and widget
+- [x] Chrome tabs provider and widget
+- [x] Recently closed tabs widget
+- [x] Chrome history provider and widget
+- [x] Local tasks widget with create, update, complete, and delete flows
+- [x] Local notes widget
+- [x] Rich text or Markdown note rendering
+- [x] Basic settings UI and persisted preferences
 - [x] Dashboard layout and widget registry
-- [ ] Persist widget visibility, ordering, and layout
-- [ ] Theme toggle with persisted dark/light/auto mode
-- [ ] Responsive layout verification across target resolutions
+- [x] Persist widget visibility, ordering, and layout
+- [x] Theme toggle with persisted dark/light/auto mode
+- [x] Responsive layout verification across target resolutions
 
 ## Phase 2: Core Productivity Features
 
@@ -39,21 +48,21 @@ This roadmap consolidates the product specifications, technical architecture, an
 - [ ] History filtering by time range and domain
 - [x] Most-visited domain analytics
 - [x] Session activity heatmap
-- [ ] Cached history snapshots and loading, empty, and error states
+- [x] Cached history snapshots and loading, empty, and error states
 
 ### Work and utility tools
 - [ ] Workspaces: create, switch, rename, and delete
 - [ ] Workspace-specific tasks, notes, bookmarks, and settings
 - [ ] Workspace persistence and optional time-based switching
 - [ ] Developer tools widget
-- [ ] JSON formatter and minifier
-- [ ] Base64 encoder and decoder
-- [ ] URL parser
+- [x] JSON formatter and minifier
+- [x] Base64 encoder and decoder
+- [x] URL parser
 - [ ] JWT decoder
 - [ ] UUID generator
 - [ ] Hash generator
 - [ ] Timestamp converter
-- [ ] Quick tools widget
+- [x] Quick tools widget
 - [ ] Calculator
 - [ ] Timer and stopwatch
 - [ ] Password generator

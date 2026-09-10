@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useAppStore } from '../stores/appStore';
 
 interface WidgetContextType {
   enabledWidgets: string[];
@@ -8,7 +9,7 @@ interface WidgetContextType {
 const WidgetContext = createContext<WidgetContextType | undefined>(undefined);
 
 export const WidgetProvider = ({ children }: { children: React.ReactNode }) => {
-  const [enabledWidgets, setEnabledWidgets] = useState(['clock', 'search']);
+  const { enabledWidgets, setEnabledWidgets } = useAppStore();
 
   return (
     <WidgetContext.Provider value={{ enabledWidgets, setEnabledWidgets }}>

@@ -1,4 +1,5 @@
 import { Provider } from '../lib/types';
+import { ExtensionBridge } from '../services/ExtensionBridge';
 
 export interface HistoryItem {
   id: string;
@@ -10,12 +11,17 @@ export const HistoryProvider: Provider<HistoryItem[]> = {
   id: 'history',
   name: 'Chrome History',
   getData: async () => {
-    return [
-      { id: '1', title: 'How to use Tailwind CSS', url: 'https://tailwindcss.com/docs' },
-      { id: '2', title: 'Advanced React Patterns', url: 'https://react.dev/patterns' },
-      { id: '3', title: 'Chrome Extension APIs', url: 'https://developer.chrome.com' },
-      { id: '4', title: 'TypeScript Best Practices', url: 'https://typescriptlang.org' },
-    ];
+    try {
+      const cached = localStorage.getItem('history_cache');
+      if (cached) return JSON.parse(cached);
+      
+      const data = await ExtensionBridge.send<HistoryItem[]>({ type: 'GET_HISTORY' });
+      localStorage.setItem('history_cache', JSON.stringify(data));
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch history:', error);
+      return [];
+    }
   },
   refresh: async () => {
     // Logic to force update
