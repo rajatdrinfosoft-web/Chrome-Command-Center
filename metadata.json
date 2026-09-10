@@ -1,0 +1,7 @@
+{
+  "name": "Chrome Command Center",
+  "description": "Advanced, futuristic browser workspace with modular widgets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
