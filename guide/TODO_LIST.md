@@ -37,14 +37,26 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [x] Add focus statistics and summaries
 - [x] Expand history timeline filtering around time and domain
 - [x] Add richer history search and analytics groupings
+- [ ] Add focus break reminders and completion notifications
+- [ ] Add optional full-screen and minimal focus mode
+- [ ] Add distraction resistance and productive-hours summaries
 
 ### Workspaces and advanced utility tools
 - [x] Workspaces and workspace-specific data management
+- [ ] Add a dedicated Workspaces widget separate from the settings modal
 - [x] Developer tools widget status beyond the existing quick tool set
 - [x] Advanced search filters by type, date, and domain
 - [x] Search analytics and grouped result ranking
 - [x] Bookmark and history organization utilities
 - [x] Statistics dashboard expansions for deeper productivity reporting
+- [ ] Add bookmark categories, folder organization, and confirmation-based auto-categorization
+- [ ] Add bookmark dead-link checking and duplicate cleanup workflow
+- [ ] Add bookmark import/export and usage-frequency analytics
+- [ ] Add history clearing, export, and local retention controls
+- [ ] Add time-spent-per-domain and busiest-hours analytics
+- [ ] Add advanced task priorities, due dates, recurring tasks, and filters
+- [ ] Add note folders, tags, pinning, search, and linked-note support
+- [ ] Add regex, color-converter, and cron-expression developer tools
 
 ## Phase 3: Advanced Browser Features
 
@@ -55,14 +67,28 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [x] Custom commands and shortcut configuration
 - [x] Multi-widget keyboard navigation improvements
 - [x] Optional Vim mode
+- [ ] Add fuzzy command matching and ranked suggestions
+- [ ] Add inline command autocomplete while typing
+- [ ] Add parameterized natural-language commands such as `timer 25` and `new task review docs`
 
 ### Integrations and sessions
 - [ ] Calendar widget and event management
 - [ ] Weather widget
 - [ ] GitHub integration
+- [ ] Add real CalendarProvider-backed data instead of placeholder states
+- [ ] Add real WeatherProvider-backed data instead of placeholder states
+- [ ] Add calendar event creation, multiple calendars, and connection states
+- [ ] Add weather location management, forecasts, and cached responses
+- [ ] Add GitHub repositories, pull requests, issues, and notifications
 - [x] Tab group management
 - [x] Sessions save/restore flow
 - [x] Session history views and restore controls
+- [ ] Add Continue/recent-work recommendations from tabs, history, bookmarks, and sessions
+- [ ] Add RSS/news feed widget with offline and empty states
+- [ ] Add browser extension information widget where Chrome permissions allow
+- [ ] Add web-search fallback from universal search
+- [ ] Add search operators for type, domain, date, priority, and tag
+- [ ] Add workspace templates, automatic switching, and tab restoration
 
 ## Phase 4: Customization, Reliability, and Scale
 
@@ -72,12 +98,18 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [x] Background customization and export/import of theme settings
 - [x] Widget drag-and-drop ordering and persistence
 - [ ] Full settings categories for privacy, integrations, and performance
+- [ ] Add permission center with explanations and connection status
+- [ ] Add layout preset templates for minimal, productivity, developer, and focus modes
+- [ ] Add widget size and minimum-size configuration
+- [ ] Add custom font, spacing, border-radius, and animation controls
 
 ### Data integrity and sync
 - [x] Backup and restore flows for local data
 - [x] Import/export of note, task, bookmark, and settings data
 - [x] Clear-data and storage management utilities
 - [ ] Optional cloud sync and account-based backup
+- [ ] Add IndexedDB storage for large browser datasets and history snapshots
+- [ ] Add selective backup and restore by data type
 
 ### Quality and accessibility
 - [x] Offline detection and offline-mode behavior
@@ -85,6 +117,12 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [ ] Unit and integration tests for providers and services
 - [ ] Provider loading, empty, and error-state testing
 - [ ] Performance audit for startup and widget rendering
+- [ ] Add provider loading, permission, empty, unavailable, and error states
+- [ ] Add reduced-motion, focus-order, screen-reader, and contrast audit
+- [ ] Add responsive testing across desktop and narrow browser windows
+- [ ] Add production Chrome API provider wiring for bookmarks, tabs, history, sessions, and focus blocking
+- [ ] Add service-worker message handlers for browser actions and normalized provider responses
+- [ ] Replace development fallback data with live Chrome data in extension builds
 
 ## Release Checklist
 
@@ -98,6 +136,12 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [ ] Test offline behavior and fallback states
 - [ ] Finalize user documentation and setup steps
 - [ ] Prepare optional marketplace packaging
+- [ ] Add privacy policy and explicit data-handling documentation
+- [ ] Remove development-only mock data from production builds
+- [ ] Verify no browser data is sent to external services by default
+- [ ] Test Chrome service-worker messaging and API permissions
+- [ ] Test Chromium-based browser compatibility
+- [ ] Add release icons and validate manifest assets
 
 ## Repository cleanup
 
@@ -105,3 +149,7 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [x] Install and align the `zustand` dependency with the current store implementation
 - [x] Add a formal test script and test dependency setup
 - [ ] Review remaining TypeScript warnings and strict typing cleanup
+- [ ] Synchronize stale checklists in the other guide files with this roadmap
+- [ ] Remove stale placeholders and unused debug logging
+- [ ] Add provider contract tests and service integration tests
+- [ ] Add search, focus, session, workspace, and data-management regression tests
