@@ -31,7 +31,11 @@ export default function App() {
 
   return (
     <WidgetProvider>
-      <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} />
+      <CommandPalette
+        isOpen={isPaletteOpen}
+        onClose={() => setIsPaletteOpen(false)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+      />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       <DashboardLayout>
         <WidgetGrid />

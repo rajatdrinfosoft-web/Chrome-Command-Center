@@ -1,8 +1,15 @@
 import { Search } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export const SearchWidget = () => {
   const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const focusSearch = () => inputRef.current?.focus();
+    window.addEventListener('command-center:focus-search', focusSearch);
+    return () => window.removeEventListener('command-center:focus-search', focusSearch);
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
@@ -10,6 +17,7 @@ export const SearchWidget = () => {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 w-5 h-5" />
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
