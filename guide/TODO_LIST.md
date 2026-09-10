@@ -37,9 +37,9 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [x] Add focus statistics and summaries
 - [x] Expand history timeline filtering around time and domain
 - [x] Add richer history search and analytics groupings
-- [ ] Add focus break reminders and completion notifications
-- [ ] Add optional full-screen and minimal focus mode
-- [ ] Add distraction resistance and productive-hours summaries
+- [x] Add focus break reminders and completion notifications
+- [x] Add optional full-screen and minimal focus mode
+- [x] Add distraction resistance and productive-hours summaries
 
 ### Workspaces and advanced utility tools
 - [x] Workspaces and workspace-specific data management
