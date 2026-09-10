@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { calculateExpression } from '../../../lib/calculator';
 
 export const Calculator = () => {
   const [input, setInput] = useState('');
@@ -6,7 +7,7 @@ export const Calculator = () => {
 
   const calculate = () => {
     try {
-      setResult(eval(input).toString()); // Simple eval for MVP, note security constraints
+      setResult(calculateExpression(input).toString());
     } catch (e) {
       setResult('Error');
     }

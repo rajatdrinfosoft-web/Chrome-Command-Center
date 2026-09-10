@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Command, LayoutGrid, RefreshCw, Search, Settings } from 'lucide-react';
 import { useWidgetContext } from '../context/WidgetContext';
+import { CommandAction, useAppStore } from '../stores/appStore';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -17,10 +18,35 @@ interface PaletteCommand {
   run: () => void;
 }
 
+const actionKeywords: Record<CommandAction, string> = {
+  'focus-search': 'focus search find bookmarks history tabs',
+  settings: 'settings preferences configuration options',
+  'toggle-widgets': 'widgets dashboard layout show hide',
+  reload: 'reload refresh restart dashboard',
+};
+
+const actionIcons: Record<CommandAction, typeof Command> = {
+  'focus-search': Search,
+  settings: Settings,
+  'toggle-widgets': LayoutGrid,
+  reload: RefreshCw,
+};
+
 export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPaletteProps) => {
   const { enabledWidgets, setEnabledWidgets } = useWidgetContext();
+  const { customCommands } = useAppStore();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const runAction = (action: CommandAction) => {
+    if (action === 'focus-search') window.dispatchEvent(new Event('command-center:focus-search'));
+    if (action === 'settings') onOpenSettings();
+    if (action === 'toggle-widgets') setEnabledWidgets(enabledWidgets.length > 2 ? ['clock', 'search'] : [
+      'clock', 'search', 'tasks', 'notes', 'bookmarks', 'tabs', 'history',
+      'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups',
+    ]);
+    if (action === 'reload') window.location.reload();
+  };
 
   const commands = useMemo<PaletteCommand[]>(() => [
     {
@@ -29,33 +55,38 @@ export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPalet
       keywords: 'search find bookmarks history tabs',
       shortcut: 'Cmd K',
       icon: Search,
-      run: () => window.dispatchEvent(new Event('command-center:focus-search')),
+      run: () => runAction('focus-search'),
     },
     {
       id: 'settings',
       label: 'Open settings',
       keywords: 'preferences configuration options',
       icon: Settings,
-      run: onOpenSettings,
+      run: () => runAction('settings'),
     },
     {
       id: 'toggle-widgets',
       label: enabledWidgets.length > 2 ? 'Hide optional widgets' : 'Show optional widgets',
       keywords: 'widgets dashboard layout',
       icon: LayoutGrid,
-      run: () => setEnabledWidgets(enabledWidgets.length > 2 ? ['clock', 'search'] : [
-        'clock', 'search', 'tasks', 'notes', 'bookmarks', 'tabs', 'history',
-        'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap',
-      ]),
+      run: () => runAction('toggle-widgets'),
     },
     {
       id: 'reload',
       label: 'Refresh dashboard',
       keywords: 'reload refresh restart',
       icon: RefreshCw,
-      run: () => window.location.reload(),
+      run: () => runAction('reload'),
     },
-  ], [enabledWidgets, onOpenSettings, setEnabledWidgets]);
+    ...customCommands.map((customCommand) => ({
+      id: customCommand.id,
+      label: customCommand.label,
+      keywords: actionKeywords[customCommand.action],
+      shortcut: customCommand.shortcut,
+      icon: actionIcons[customCommand.action],
+      run: () => runAction(customCommand.action),
+    })),
+  ], [customCommands, enabledWidgets, onOpenSettings, setEnabledWidgets]);
 
   const filteredCommands = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -98,6 +129,25 @@ export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPalet
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [filteredCommands, isOpen, onClose, selectedIndex]);
+
+  useEffect(() => {
+    if (!isOpen || query.trim()) return;
+    const normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery === 'focus search' || normalizedQuery === 'search') {
+      setSelectedIndex(commands.findIndex(({ id }) => id === 'focus-search'));
+    }
+  }, [commands, isOpen, query]);
+
+  useEffect(() => {
+    const handleAction = (event: Event) => {
+      const action = (event as CustomEvent<CommandAction>).detail;
+      runAction(action);
+      onClose();
+    };
+
+    window.addEventListener('command-center:run-action', handleAction);
+    return () => window.removeEventListener('command-center:run-action', handleAction);
+  }, [onClose, enabledWidgets, setEnabledWidgets, onOpenSettings]);
 
   if (!isOpen) return null;
 

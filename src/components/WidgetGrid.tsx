@@ -1,13 +1,40 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useWidgetContext } from '../context/WidgetContext';
 import { WIDGET_MAP } from '../lib/widgetRegistry';
+import { useAppStore } from '../stores/appStore';
 
 export const WidgetGrid = () => {
   const { enabledWidgets } = useWidgetContext();
+  const { vimMode, widgetOrder, setWidgetOrder, reducedMotion } = useAppStore();
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const widgetRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   const coreWidgets = ['bookmarks', 'tabs', 'tasks'];
-  const optionalWidgets = enabledWidgets.filter(id => !['clock', 'search', ...coreWidgets].includes(id));
+  const fallbackOrder = [...coreWidgets, ...enabledWidgets.filter(id => !['clock', 'search', ...coreWidgets].includes(id))];
+  const widgetIds = [...new Set([...widgetOrder, ...fallbackOrder])].filter((id) => enabledWidgets.includes(id) && WIDGET_MAP[id]);
+  const optionalWidgets = widgetIds.filter(id => !coreWidgets.includes(id));
+  const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLSelectElement) return;
+      const direction = event.key === 'ArrowRight' || (vimMode && event.key === 'l') ? 1
+        : event.key === 'ArrowLeft' || (vimMode && event.key === 'h') ? -1
+        : event.key === 'ArrowDown' || (vimMode && event.key === 'j') ? 1
+        : event.key === 'ArrowUp' || (vimMode && event.key === 'k') ? -1 : 0;
+      if (!direction || !widgetIds.length) return;
+      event.preventDefault();
+      setFocusedIndex((currentIndex) => {
+        const nextIndex = (currentIndex + direction + widgetIds.length) % widgetIds.length;
+        widgetRefs.current[nextIndex]?.focus();
+        return nextIndex;
+      });
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [vimMode, widgetIds.length]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -20,13 +47,32 @@ export const WidgetGrid = () => {
   };
 
   const renderWidget = (id: string) => {
+    const widgetIndex = widgetIds.indexOf(id);
     const WidgetComponent = WIDGET_MAP[id];
     if (!WidgetComponent) return null;
     return (
-      <motion.div 
+      <motion.div
         key={id} 
+        ref={(element) => { widgetRefs.current[widgetIndex] = element; }}
+        tabIndex={0}
+        onFocus={() => setFocusedIndex(widgetIndex)}
+        draggable
+        onDragStart={() => setDraggedWidget(id)}
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={() => {
+          if (!draggedWidget || draggedWidget === id) return;
+          const nextOrder = [...widgetIds];
+          const fromIndex = nextOrder.indexOf(draggedWidget);
+          const toIndex = nextOrder.indexOf(id);
+          nextOrder.splice(fromIndex, 1);
+          nextOrder.splice(toIndex, 0, draggedWidget);
+          setWidgetOrder(nextOrder);
+          setDraggedWidget(null);
+        }}
+        onDragEnd={() => setDraggedWidget(null)}
+        aria-label={`${id} widget`}
         variants={itemVariants}
-        className="p-6 bg-slate-900/40 border border-cyan-900/30 rounded-2xl backdrop-blur-xl shadow-[0_0_15px_rgba(6,182,212,0.05)] ring-1 ring-white/5 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all duration-300 animate-[pulse_4s_ease-in-out_infinite]"
+        className={`p-6 bg-slate-900/40 border border-cyan-900/30 rounded-2xl backdrop-blur-xl shadow-[0_0_15px_rgba(6,182,212,0.05)] ring-1 ring-white/5 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all duration-300 ${reducedMotion ? '' : 'animate-[pulse_4s_ease-in-out_infinite]'}`}
       >
         <WidgetComponent />
       </motion.div>

@@ -1,4 +1,5 @@
 import { Provider } from '../lib/types';
+import { fallbackRecentlyClosedTabs } from '../mockData/fallbackData';
 
 export interface ClosedTab {
   id: string;
@@ -11,10 +12,7 @@ export const RecentlyClosedTabsProvider: Provider<ClosedTab[]> = {
   name: 'Recently Closed Tabs',
   getData: async () => {
     // In production extension, call: chrome.sessions.getRecentlyClosed(...)
-    return [
-      { id: '1', title: 'Product Specification', url: '#' },
-      { id: '2', title: 'Dashboard Planning', url: '#' },
-    ];
+    return fallbackRecentlyClosedTabs;
   },
   refresh: async () => {},
 };

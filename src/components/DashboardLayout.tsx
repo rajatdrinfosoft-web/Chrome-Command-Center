@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 p-8 selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[var(--page-background)] text-neutral-100 p-8 selection:bg-cyan-500/30 selection:text-cyan-200">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent pointer-events-none animate-pulse" />
       <div className="max-w-7xl mx-auto flex flex-col gap-12 relative">
         {/* Header/Hero Zone */}

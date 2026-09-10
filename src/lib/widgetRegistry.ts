@@ -9,6 +9,10 @@ import { RecentlyClosedTabsWidget } from '../components/widgets/RecentlyClosedTa
 import { PomodoroWidget } from '../components/widgets/PomodoroWidget';
 import { AnalyticsWidget } from '../components/widgets/AnalyticsWidget';
 import { SessionHeatmapWidget } from '../components/widgets/SessionHeatmapWidget';
+import { QuickToolsWidget } from '../components/widgets/QuickToolsWidget';
+import { StatisticsWidget } from '../components/widgets/StatisticsWidget';
+import { SessionsWidget } from '../components/widgets/SessionsWidget';
+import { TabGroupsWidget } from '../components/widgets/TabGroupsWidget';
 import React from 'react';
 
 export const WIDGET_REGISTRY: Record<string, any> = {
@@ -23,6 +27,10 @@ export const WIDGET_REGISTRY: Record<string, any> = {
   pomodoro: { id: 'pomodoro', name: 'Pomodoro' },
   analytics: { id: 'analytics', name: 'Analytics' },
   sessionHeatmap: { id: 'sessionHeatmap', name: 'Session Heatmap' },
+  quickTools: { id: 'quickTools', name: 'Developer Tools' },
+  statistics: { id: 'statistics', name: 'Statistics' },
+  sessions: { id: 'sessions', name: 'Saved Sessions' },
+  tabGroups: { id: 'tabGroups', name: 'Tab Groups' },
 };
 
 export const WIDGET_MAP: Record<string, React.FC> = {
@@ -37,6 +45,10 @@ export const WIDGET_MAP: Record<string, React.FC> = {
   pomodoro: PomodoroWidget,
   analytics: AnalyticsWidget,
   sessionHeatmap: SessionHeatmapWidget,
+  quickTools: QuickToolsWidget,
+  statistics: StatisticsWidget,
+  sessions: SessionsWidget,
+  tabGroups: TabGroupsWidget,
 };
 
 export const getEnabledWidgets = (): string[] => Object.keys(WIDGET_MAP);

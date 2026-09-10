@@ -1,4 +1,5 @@
 import { Provider } from '../lib/types';
+import { fallbackAnalytics } from '../mockData/fallbackData';
 
 export interface SiteStats {
   url: string;
@@ -10,10 +11,7 @@ export const AnalyticsProvider: Provider<SiteStats[]> = {
   name: 'Browser Analytics',
   getData: async () => {
     // In production, analyze chrome.history data
-    return [
-      { url: 'google.com', count: 42 },
-      { url: 'github.com', count: 28 },
-    ];
+    return fallbackAnalytics;
   },
   refresh: async () => {},
 };

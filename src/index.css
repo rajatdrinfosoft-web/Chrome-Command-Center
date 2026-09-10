@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+:root {
+	--accent-color: #22d3ee;
+	--page-background: #050505;
+	--custom-background: none;
+}
+
+:root[data-theme='light'] {
+	--page-background: #f4f7f8;
+	color-scheme: light;
+}
+
+:root[data-theme='auto'] {
+	color-scheme: light dark;
+}
+
+:root[data-background='midnight'] {
+	--page-background: #07111f;
+}
+
+:root[data-background='custom'] {
+	--page-background: var(--custom-background), #050505;
+	background-size: cover;
+	background-position: center;
+}
+
+:root[data-reduced-motion='true'] *,
+:root[data-reduced-motion='true'] *::before,
+:root[data-reduced-motion='true'] *::after {
+	animation-duration: 0.01ms !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0.01ms !important;
+	scroll-behavior: auto !important;
+}
+
+*:focus-visible {
+	outline: 2px solid var(--accent-color);
+	outline-offset: 3px;
+}

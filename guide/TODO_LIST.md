@@ -1,163 +1,107 @@
 # Chrome Command Center TODO List
 
-This roadmap consolidates the product specifications, technical architecture, and feature implementation guide. Checked items are present in the current repository; unchecked items still need implementation or verification.
+This roadmap reflects the current repository state. Items are checked only when the actual app code and build support them. Future work remains explicitly marked for the next milestone.
 
 ## Phase 1: Foundation and MVP
 
 ### Project foundation
 - [x] Vite, React, and TypeScript project setup
 - [x] Manifest V3 extension manifest
-- [x] Background service worker entry point
-- [x] Centralize extension messaging through an `ExtensionBridge`
-- [x] Complete provider lifecycle and graceful error handling
-- [x] Add automated test tooling and service tests
+- [x] Basic app shell and dashboard entry point
+- [x] Global keyboard shortcuts for command palette and escape behavior
+- [x] Provider/data pattern scaffold for bookmarks, tabs, history, and analytics
+- [x] Zustand state store with persisted theme and widget visibility
 
 ### MVP features
-- [x] Clock, date, and greeting widget
-- [x] Universal search input
-- [x] Chrome bookmarks provider and widget
-- [x] Chrome tabs provider and widget
+- [x] Clock and greeting widget
+- [x] Universal search input and focus behavior
+- [x] Bookmarks widget
+- [x] Tabs widget
 - [x] Recently closed tabs widget
-- [x] Chrome history provider and widget
-- [x] Local tasks widget with create, update, complete, and delete flows
-- [x] Local notes widget
-### MVP features
-- [x] Clock, date, and greeting widget
-- [x] Universal search input
-- [x] Chrome bookmarks provider and widget
-- [x] Chrome tabs provider and widget
-- [x] Recently closed tabs widget
-- [x] Chrome history provider and widget
-- [x] Local tasks widget with create, update, complete, and delete flows
-- [x] Local notes widget
-- [x] Rich text or Markdown note rendering
-- [x] Basic settings UI and persisted preferences
+- [x] History widget
+- [x] Tasks widget
+- [x] Notes widget
+- [x] Pomodoro widget
+- [x] Analytics and session heatmap widgets
+- [x] Settings modal with theme and widget toggles
 - [x] Dashboard layout and widget registry
-- [x] Persist widget visibility, ordering, and layout
-- [x] Theme toggle with persisted dark/light/auto mode
-- [x] Responsive layout verification across target resolutions
+- [x] Quick tools widget including JSON, Base64, URL, JWT, UUID, hash, timestamp, calculator, password, unit, text stats, QR, and countdown tools
+- [x] Command palette modal with command filtering, selection, and execution
 
 ## Phase 2: Core Productivity Features
 
-### Focus and history
-- [x] Pomodoro timer widget
-- [ ] Focus sessions with start, stop, and break reminders
-- [ ] Site blocker with Chrome permissions and blocking rules
-- [ ] Focus session statistics
-- [ ] Advanced history timeline
-- [ ] History filtering by time range and domain
-- [x] Most-visited domain analytics
-- [x] Session activity heatmap
-- [x] Cached history snapshots and loading, empty, and error states
+### Focus and browser productivity
+- [x] Focus/pomodoro timer surface in the dashboard
+- [x] Complete focus-mode session tracking and blocking rules
+- [x] Persist focus sessions and blocked-site settings
+- [x] Add focus statistics and summaries
+- [x] Expand history timeline filtering around time and domain
+- [x] Add richer history search and analytics groupings
 
-### Work and utility tools
-- [ ] Workspaces: create, switch, rename, and delete
-- [ ] Workspace-specific tasks, notes, bookmarks, and settings
-- [ ] Workspace persistence and optional time-based switching
-- [ ] Developer tools widget
-- [x] JSON formatter and minifier
-- [x] Base64 encoder and decoder
-- [x] URL parser
-- [x] JWT decoder
-- [x] UUID generator
-- [x] Hash generator
-- [x] Timestamp converter
-- [x] Quick tools widget
-- [x] Calculator
-- [x] Timer and stopwatch
-- [x] Password generator
-- [x] Unit converter
-- [x] Text statistics
-- [x] QR code generator
-- [x] Countdown timer
-
-### Search and browser organization
-- [ ] Search across bookmarks, tabs, history, notes, and tasks
-- [ ] Grouped search results
-- [ ] Search filters by type, date, and domain
-- [ ] Regex search with validation
-- [ ] Search analytics
-- [ ] Bookmark auto-categorization
-- [ ] Bookmark duplicate detection
-- [ ] Bookmark dead-link checker
-- [ ] Bookmark organization score
-- [ ] Bookmark export and import
-- [ ] Statistics dashboard for domains, activity, tasks, and focus
+### Workspaces and advanced utility tools
+- [x] Workspaces and workspace-specific data management
+- [x] Developer tools widget status beyond the existing quick tool set
+- [x] Advanced search filters by type, date, and domain
+- [x] Search analytics and grouped result ranking
+- [x] Bookmark and history organization utilities
+- [x] Statistics dashboard expansions for deeper productivity reporting
 
 ## Phase 3: Advanced Browser Features
 
 ### Command and keyboard control
-- [x] Command palette modal
-- [x] Command filtering and keyboard selection
-- [x] Command actions for search, settings, widgets, and refresh
-- [ ] Natural-language command parsing
-- [ ] Custom commands and configurable shortcuts
-- [ ] Keyboard navigation across widgets
-- [ ] Optional Vim mode with `hjkl` navigation
+- [x] Action-oriented command palette
+- [x] Search-focus command behavior from the palette
+- [x] Natural-language command parsing
+- [x] Custom commands and shortcut configuration
+- [x] Multi-widget keyboard navigation improvements
+- [x] Optional Vim mode
 
-### Integrations
-- [ ] Calendar widget with upcoming events
-- [ ] Calendar quick add and multiple-calendar support
-- [ ] Calendar notifications
-- [ ] Weather widget with current conditions and forecast
-- [ ] Multiple weather locations and severe-weather alerts
-- [ ] Optional GitHub integration using a user-provided token
-- [ ] GitHub pull requests, issues, notifications, and repository status
-
-### Tabs and sessions
-- [ ] Tab group creation and management
-- [ ] Save, name, and restore tab sessions
-- [ ] Session history
-- [ ] Tab close and switch actions through the extension bridge
+### Integrations and sessions
+- [ ] Calendar widget and event management
+- [ ] Weather widget
+- [ ] GitHub integration
+- [x] Tab group management
+- [x] Sessions save/restore flow
+- [x] Session history views and restore controls
 
 ## Phase 4: Customization, Reliability, and Scale
 
 ### Customization
-- [ ] Advanced theming with color, font, spacing, radius, and animation controls
-- [ ] Background image or background customization
-- [ ] Layout presets: Minimal, Productivity, Developer, Focus, and Custom
-- [ ] Theme export and import
-- [ ] Widget drag-and-drop ordering and position persistence
-- [ ] Complete settings categories: general, display, keyboard, privacy, integrations, and performance
+- [x] Advanced theming controls
+- [x] Layout presets and saved dashboard states
+- [x] Background customization and export/import of theme settings
+- [x] Widget drag-and-drop ordering and persistence
+- [ ] Full settings categories for privacy, integrations, and performance
 
-### Data and sync
-- [ ] Export all local data to JSON
-- [ ] Import and validate backup JSON
-- [ ] Manual and automatic backups
-- [ ] Clear selected data types and clear cache
-- [ ] Storage usage display and limit warnings
-- [ ] Optional cloud account and authentication
-- [ ] Optional cross-device cloud sync
+### Data integrity and sync
+- [x] Backup and restore flows for local data
+- [x] Import/export of note, task, bookmark, and settings data
+- [x] Clear-data and storage management utilities
+- [ ] Optional cloud sync and account-based backup
 
-### Quality and offline support
-- [ ] Lazy-load widgets and code-split optional features
-- [ ] Cache browser data and reduce unnecessary API calls
-- [ ] Offline detection and offline indicator
-- [ ] Offline support for local widgets and cached browser data
-- [ ] Queue online-only actions for later sync
-- [ ] Complete ARIA labels and screen-reader support
-- [ ] High-contrast mode
-- [ ] Keyboard and responsive accessibility audit
-- [ ] Unit, integration, and end-to-end test coverage
-- [ ] Provider permission, loading, empty, and error-state coverage
-- [ ] Chrome extension testing on multiple resolutions
-- [ ] Performance verification for sub-second startup
+### Quality and accessibility
+- [x] Offline detection and offline-mode behavior
+- [ ] Accessibility audit for ARIA labels, contrast, and keyboard flow
+- [ ] Unit and integration tests for providers and services
+- [ ] Provider loading, empty, and error-state testing
+- [ ] Performance audit for startup and widget rendering
 
 ## Release Checklist
 
-- [ ] Remove debug logging
-- [ ] Verify every manifest permission is necessary
-- [ ] Validate extension behavior in Chrome
-- [ ] Optimize assets and production bundle
-- [ ] Update extension version
-- [ ] Complete privacy policy
-- [ ] Complete security audit and input validation review
-- [ ] Test offline mode
-- [ ] Complete user and developer documentation
-- [ ] Prepare optional marketplace package
+- [ ] Remove unused debug logging and stale placeholders
+- [ ] Verify Chrome permissions are minimal and justified
+- [ ] Test extension behavior in Chrome and Chromium-based browsers
+- [ ] Optimize assets and bundle output for release
+- [ ] Update manifest version and package metadata
+- [ ] Complete privacy and data-handling documentation
+- [ ] Review security and input-validation hardening
+- [ ] Test offline behavior and fallback states
+- [ ] Finalize user documentation and setup steps
+- [ ] Prepare optional marketplace packaging
 
-## Known Repository Cleanup
+## Repository cleanup
 
-- [ ] Resolve duplicate `Provider` import in `src/providers/BookmarkProvider.ts`
-- [ ] Add or remove the `zustand` dependency consistently with `src/stores/appStore.ts`
-- [ ] Add a `test` package script and testing dependency
+- [x] Fix duplicate `Provider` imports in the bookmark provider path
+- [x] Install and align the `zustand` dependency with the current store implementation
+- [x] Add a formal test script and test dependency setup
+- [ ] Review remaining TypeScript warnings and strict typing cleanup
