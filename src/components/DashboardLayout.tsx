@@ -1,8 +1,6 @@
 import React from 'react';
 import { ClockWidget } from './widgets/ClockWidget';
 import { SearchWidget } from './widgets/SearchWidget';
-import { useWidgetContext } from '../context/WidgetContext';
-import { WIDGET_REGISTRY } from '../lib/widgetRegistry';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -10,22 +8,33 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen bg-[var(--page-background)] text-neutral-100 p-8 selection:bg-cyan-500/30 selection:text-cyan-200">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent pointer-events-none animate-pulse" />
-      <div className="max-w-7xl mx-auto flex flex-col gap-12 relative">
-        {/* Header/Hero Zone */}
-        <header className="flex flex-col items-center gap-6 pt-16 pb-8">
-          <div className="flex flex-col items-center gap-2">
-            <ClockWidget />
-            <div className="text-cyan-400 font-medium tracking-wider text-sm uppercase">Command Center</div>
+    <div className="command-shell min-h-screen overflow-hidden px-4 py-4 sm:px-8 sm:py-6" data-page="dashboard">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 relative">
+        <nav className="command-topbar command-reveal flex items-center justify-between rounded-2xl px-4 py-3 sm:px-5" aria-label="Primary navigation">
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[var(--accent-color)] text-sm font-black text-[#071014]">CC</span>
+            <div>
+              <div className="text-sm font-bold tracking-tight text-[var(--page-ink)]">Command Center</div>
+              <div className="command-kicker">Personal browser OS</div>
+            </div>
           </div>
-          <div className="w-full max-w-xl">
+          <div className="hidden items-center gap-2 text-xs text-[var(--page-muted)] sm:flex">
+            <span className="h-2 w-2 rounded-full bg-[var(--accent-lime)] shadow-[0_0_12px_var(--accent-lime)]" />
+            Local workspace active
+          </div>
+        </nav>
+
+        <header className="command-reveal command-reveal-delay-1 grid gap-7 py-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end lg:py-10">
+          <div className="flex flex-col gap-4">
+            <div className="command-kicker text-[var(--accent-coral)]">Good to see you</div>
+            <ClockWidget />
+          </div>
+          <div className="w-full lg:justify-self-end lg:max-w-2xl">
              <SearchWidget />
           </div>
         </header>
 
-        {/* Dynamic Widget Zones */}
-        {children}
+        <main className="command-reveal command-reveal-delay-2">{children}</main>
       </div>
     </div>
   );

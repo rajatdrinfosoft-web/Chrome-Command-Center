@@ -72,7 +72,8 @@ export const WidgetGrid = () => {
         onDragEnd={() => setDraggedWidget(null)}
         aria-label={`${id} widget`}
         variants={itemVariants}
-        className={`p-6 bg-slate-900/40 border border-cyan-900/30 rounded-2xl backdrop-blur-xl shadow-[0_0_15px_rgba(6,182,212,0.05)] ring-1 ring-white/5 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all duration-300 ${reducedMotion ? '' : 'animate-[pulse_4s_ease-in-out_infinite]'}`}
+        data-accent={['bookmarks', 'history', 'analytics'].includes(id) ? 'coral' : ['tasks', 'notes', 'sessions'].includes(id) ? 'lime' : ['tabs', 'tabGroups', 'statistics'].includes(id) ? 'amber' : undefined}
+        className={`command-widget min-h-[150px] rounded-2xl p-5 text-[var(--page-ink)] transition-all duration-300 sm:p-6 ${reducedMotion ? '' : 'command-reveal'} ${reducedMotion ? '' : `command-reveal-delay-${(widgetIndex % 3) + 1}`}`}
       >
         <WidgetComponent />
       </motion.div>

@@ -60,9 +60,12 @@ export const SearchWidget = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-sm font-medium text-neutral-400">Universal Search</h2>
-      <div className="relative">
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between px-1">
+        <h2 className="command-kicker">Universal search</h2>
+        <kbd className="rounded-md border border-[var(--surface-line)] px-2 py-1 text-[10px] text-[var(--page-muted)]">⌘ K</kbd>
+      </div>
+      <div className="command-search relative rounded-2xl p-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 w-5 h-5" />
         <input
           ref={inputRef}
@@ -70,7 +73,7 @@ export const SearchWidget = () => {
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           placeholder="Search bookmarks, history, tabs..."
-          className="w-full bg-neutral-950 border border-neutral-800 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
+          className="w-full bg-transparent py-4 pl-12 pr-4 text-[var(--page-ink)] placeholder:text-[var(--page-muted)] focus:outline-none"
         />
       </div>
       <div className="flex gap-2">

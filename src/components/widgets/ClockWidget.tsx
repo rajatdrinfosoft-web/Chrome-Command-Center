@@ -10,11 +10,11 @@ export const ClockWidget = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-sm font-medium text-neutral-400">Clock</h2>
-      <div className="text-4xl font-mono tracking-tight text-white">
+      <div className="command-kicker">Local time</div>
+      <div className="text-5xl font-semibold tracking-[-0.06em] text-[var(--page-ink)] sm:text-7xl">
         {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </div>
-      <div className="text-sm text-neutral-500">
+      <div className="text-sm text-[var(--page-muted)]">
         {time.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}
       </div>
     </div>
