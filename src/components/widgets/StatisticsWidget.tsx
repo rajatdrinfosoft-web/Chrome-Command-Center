@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AnalyticsProvider, SiteStats } from '../../providers/AnalyticsProvider';
 import { HistoryProvider, HistoryItem } from '../../providers/HistoryProvider';
 import { useAppStore } from '../../stores/appStore';
+import { PieChart } from 'lucide-react';
 
 const getDomain = (url: string) => {
   try {
@@ -31,24 +32,32 @@ export const StatisticsWidget = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-neutral-400">Productivity Statistics</h2>
-        <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-600">Local</span>
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-2">
+          <PieChart className="h-4 w-4 text-[var(--widget-accent)]" />
+          <span className="command-kicker text-[var(--widget-accent)]">SYSTEM TELEMETRY</span>
+        </div>
+        <span className="text-[9px] uppercase font-bold tracking-[0.2em] text-[var(--widget-accent)] bg-[var(--widget-accent)]/10 border border-[var(--widget-accent)]/20 px-2 py-0.5 rounded-full">
+          LOCAL
+        </span>
       </div>
-      <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+      
+      <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4 mt-1">
         {[
           ['Visits', totalVisits],
           ['Domains', domains],
-          ['Focus min', totalFocusMinutes],
+          ['Focus Min', totalFocusMinutes],
           ['Searches', searchCount],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-lg border border-neutral-800 bg-neutral-950/60 p-2">
-            <div className="text-neutral-500">{label}</div>
-            <div className="mt-1 text-lg font-semibold text-white">{value}</div>
+          <div key={label} className="flex flex-col items-center justify-center rounded-xl border border-[var(--surface-line)] bg-[var(--surface-strong)]/30 p-3 hover:bg-[var(--surface-strong)] hover:border-[var(--widget-accent)]/40 transition-colors">
+            <div className="text-[10px] uppercase font-bold text-[var(--page-muted)]">{label}</div>
+            <div className="mt-1 text-xl font-bold text-[var(--page-ink)]">{value}</div>
           </div>
         ))}
       </div>
-      <p className="text-xs text-neutral-500">Activity spans {activeDays} local day{activeDays === 1 ? '' : 's'}.</p>
+      <p className="text-[10px] font-medium text-[var(--page-muted)] text-center mt-2">
+        Activity spans <span className="text-[var(--page-ink)] font-bold">{activeDays}</span> local day{activeDays === 1 ? '' : 's'}.
+      </p>
     </div>
   );
 };

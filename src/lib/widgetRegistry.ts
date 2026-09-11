@@ -13,6 +13,12 @@ import { QuickToolsWidget } from '../components/widgets/QuickToolsWidget';
 import { StatisticsWidget } from '../components/widgets/StatisticsWidget';
 import { SessionsWidget } from '../components/widgets/SessionsWidget';
 import { TabGroupsWidget } from '../components/widgets/TabGroupsWidget';
+import { WorkspacesWidget } from '../components/widgets/WorkspacesWidget';
+import { CalendarWidget } from '../components/widgets/CalendarWidget';
+import { WeatherWidget } from '../components/widgets/WeatherWidget';
+import { GitHubWidget } from '../components/widgets/GitHubWidget';
+import { ExtensionInfoWidget } from '../components/widgets/ExtensionInfoWidget';
+import { RecentWorkWidget } from '../components/widgets/RecentWorkWidget';
 import React from 'react';
 
 export const WIDGET_REGISTRY: Record<string, any> = {
@@ -31,6 +37,12 @@ export const WIDGET_REGISTRY: Record<string, any> = {
   statistics: { id: 'statistics', name: 'Statistics' },
   sessions: { id: 'sessions', name: 'Saved Sessions' },
   tabGroups: { id: 'tabGroups', name: 'Tab Groups' },
+  workspaces: { id: 'workspaces', name: 'Workspaces' },
+  calendar: { id: 'calendar', name: 'Calendar' },
+  weather: { id: 'weather', name: 'Weather' },
+  github: { id: 'github', name: 'GitHub' },
+  extensionInfo: { id: 'extensionInfo', name: 'Extension Info' },
+  recentWork: { id: 'recentWork', name: 'Recent Work' },
 };
 
 export const WIDGET_MAP: Record<string, React.FC> = {
@@ -49,6 +61,12 @@ export const WIDGET_MAP: Record<string, React.FC> = {
   statistics: StatisticsWidget,
   sessions: SessionsWidget,
   tabGroups: TabGroupsWidget,
+  workspaces: WorkspacesWidget,
+  calendar: CalendarWidget,
+  weather: WeatherWidget,
+  github: GitHubWidget,
+  extensionInfo: ExtensionInfoWidget,
+  recentWork: RecentWorkWidget,
 };
 
 export const getEnabledWidgets = (): string[] => Object.keys(WIDGET_MAP);

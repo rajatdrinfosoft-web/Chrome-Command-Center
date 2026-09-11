@@ -25,15 +25,13 @@ export const TabsWidget = () => {
   return (
     <div className="flex flex-col gap-3.5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-            <LayoutGrid className="h-3.5 w-3.5" />
-          </span>
-          <h2 className="text-sm font-semibold tracking-wide text-[var(--page-ink)]">Active Browser Tabs</h2>
+          <LayoutGrid className="h-4 w-4 text-[var(--widget-accent)]" />
+          <span className="command-kicker text-[var(--widget-accent)]">ACTIVE BROWSER TABS</span>
         </div>
-        <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-400 border border-amber-500/20">
-          {tabs.length} Open
+        <span className="rounded-full bg-[var(--widget-accent)]/10 px-2 py-0.5 text-[10px] font-mono font-bold text-[var(--widget-accent)] border border-[var(--widget-accent)]/20">
+          {tabs.length} OPEN
         </span>
       </div>
 

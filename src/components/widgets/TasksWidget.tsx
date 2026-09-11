@@ -1,40 +1,67 @@
 import { useState, useEffect } from 'react';
-import { CheckSquare, Square, Plus, Trash2, CheckCircle2, ListTodo, AlertCircle } from 'lucide-react';
+import { CheckSquare, Square, Plus, Trash2, CheckCircle2, ListTodo, AlertCircle, Calendar, Repeat } from 'lucide-react';
 import { taskProvider, Task } from '../../services/taskService';
 
-type Priority = 'urgent' | 'high' | 'normal';
-
-interface ExtendedTask extends Task {
-  priority?: Priority;
-}
-
 export const TasksWidget = () => {
-  const [tasks, setTasks] = useState<ExtendedTask[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [newTitle, setNewTitle] = useState('');
-  const [priority, setPriority] = useState<Priority>('normal');
+  const [priority, setPriority] = useState<Task['priority']>('normal');
+  const [dueDate, setDueDate] = useState('');
+  const [recurring, setRecurring] = useState<Task['recurring']>('none');
   const [filter, setFilter] = useState<'all' | 'active' | 'done'>('all');
+  const [showOptions, setShowOptions] = useState(false);
 
   useEffect(() => {
-    setTasks([
-      { id: '1', title: 'Complete Command Center architecture', completed: true, priority: 'urgent' },
-      { id: '2', title: 'Refactor UI with glowing Cybernetic theme', completed: true, priority: 'high' },
-      { id: '3', title: 'Implement full keyboard shortcuts (Ctrl+K)', completed: false, priority: 'urgent' },
-      { id: '4', title: 'Optimize widget motion and telemetry HUD', completed: false, priority: 'normal' },
-    ]);
+    const saved = taskProvider.getTasks();
+    if (saved.length > 0) {
+      setTasks(saved);
+    } else {
+      setTasks([
+        { id: '1', title: 'Complete Command Center architecture', completed: true, priority: 'urgent', dueDate: '2026-09-10' },
+        { id: '2', title: 'Refactor UI with glowing Cybernetic theme', completed: true, priority: 'high' },
+        { id: '3', title: 'Implement full keyboard shortcuts (Ctrl+K)', completed: false, priority: 'urgent', recurring: 'daily' },
+        { id: '4', title: 'Optimize widget motion and telemetry HUD', completed: false, priority: 'normal', dueDate: '2026-09-12' },
+      ]);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleAddTask = (e: Event) => {
+      const title = (e as CustomEvent<string>).detail;
+      setTasks(prev => {
+        const newTask: Task = {
+          id: Date.now().toString(),
+          title,
+          completed: false,
+          priority: 'normal',
+        };
+        const updated = [newTask, ...prev];
+        taskProvider.saveTasks(updated);
+        return updated;
+      });
+    };
+
+    window.addEventListener('command-center:add-task', handleAddTask);
+    return () => window.removeEventListener('command-center:add-task', handleAddTask);
   }, []);
 
   const addTask = () => {
     if (!newTitle.trim()) return;
-    const newTask: ExtendedTask = {
+    const newTask: Task = {
       id: Date.now().toString(),
       title: newTitle.trim(),
       completed: false,
       priority,
+      dueDate: dueDate || undefined,
+      recurring: recurring !== 'none' ? recurring : undefined,
     };
     const updated = [newTask, ...tasks];
     setTasks(updated);
     taskProvider.saveTasks(updated);
     setNewTitle('');
+    setDueDate('');
+    setRecurring('none');
+    setShowOptions(false);
   };
 
   const toggleTask = (id: string) => {
@@ -56,7 +83,7 @@ export const TasksWidget = () => {
     return true;
   });
 
-  const getPriorityBadge = (p?: Priority) => {
+  const getPriorityBadge = (p?: Task['priority']) => {
     switch (p) {
       case 'urgent':
         return <span className="rounded px-1.5 py-0.5 text-[9px] font-bold uppercase text-rose-400 bg-rose-500/10 border border-rose-500/30">Urgent</span>;
@@ -72,14 +99,12 @@ export const TasksWidget = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <ListTodo className="h-3.5 w-3.5" />
-          </span>
-          <h2 className="text-sm font-semibold tracking-wide text-[var(--page-ink)]">Tactical Tasks</h2>
+          <ListTodo className="h-4 w-4 text-[var(--widget-accent)]" />
+          <span className="command-kicker text-[var(--widget-accent)]">TACTICAL TASKS</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400 border border-emerald-500/20">
-            {completedCount}/{tasks.length} Done
+          <span className="rounded-full bg-[var(--widget-accent)]/10 px-2 py-0.5 text-[10px] font-mono font-bold text-[var(--widget-accent)] border border-[var(--widget-accent)]/20">
+            {completedCount}/{tasks.length} DONE
           </span>
         </div>
       </div>
@@ -96,6 +121,13 @@ export const TasksWidget = () => {
           />
           <button
             type="button"
+            onClick={() => setShowOptions(!showOptions)}
+            className={`flex items-center justify-center w-8 rounded-xl border border-[var(--surface-line)] transition-colors ${showOptions ? 'bg-[var(--widget-accent)]/20 text-[var(--widget-accent)] border-[var(--widget-accent)]/50' : 'bg-[var(--surface-strong)] text-[var(--page-muted)] hover:text-[var(--page-ink)]'}`}
+          >
+            <Calendar className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
             onClick={addTask}
             className="flex items-center gap-1 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-bold text-neutral-950 hover:bg-emerald-400 transition-all shadow-[0_0_12px_rgba(16,185,129,0.3)] active:scale-95"
           >
@@ -104,25 +136,55 @@ export const TasksWidget = () => {
           </button>
         </div>
 
-        <div className="flex items-center justify-between text-[11px]">
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] uppercase font-bold text-[var(--page-muted)]">Priority:</span>
-            {(['urgent', 'high', 'normal'] as Priority[]).map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPriority(p)}
-                className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase transition-all ${
-                  priority === p
-                    ? p === 'urgent' ? 'bg-rose-500 text-neutral-950 font-bold' : p === 'high' ? 'bg-amber-500 text-neutral-950 font-bold' : 'bg-emerald-500 text-neutral-950 font-bold'
-                    : 'text-[var(--page-muted)] hover:text-[var(--page-ink)]'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
+        {showOptions && (
+          <div className="flex flex-col gap-2 p-2 rounded-xl border border-[var(--surface-line)] bg-[var(--surface-strong)]/40 animate-fadeIn text-[11px]">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold text-[var(--page-muted)] w-16">Priority</span>
+              <div className="flex gap-1 flex-1">
+                {(['urgent', 'high', 'normal'] as Task['priority'][]).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPriority(p)}
+                    className={`rounded px-1.5 py-0.5 font-semibold uppercase transition-all ${
+                      priority === p
+                        ? p === 'urgent' ? 'bg-rose-500 text-neutral-950' : p === 'high' ? 'bg-amber-500 text-neutral-950' : 'bg-emerald-500 text-neutral-950'
+                        : 'bg-[var(--surface-strong)] text-[var(--page-muted)] border border-[var(--surface-line)] hover:text-[var(--page-ink)]'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold text-[var(--page-muted)] w-16">Due</span>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="flex-1 bg-[var(--surface-strong)] border border-[var(--surface-line)] rounded px-2 py-0.5 text-[var(--page-ink)] focus:outline-none"
+              />
+            </div>
 
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-bold text-[var(--page-muted)] w-16">Repeat</span>
+              <select
+                value={recurring}
+                onChange={(e) => setRecurring(e.target.value as Task['recurring'])}
+                className="flex-1 bg-[var(--surface-strong)] border border-[var(--surface-line)] rounded px-2 py-0.5 text-[var(--page-ink)] focus:outline-none"
+              >
+                <option value="none">None</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center justify-end text-[11px] mt-1">
           <div className="flex items-center gap-1">
             {(['all', 'active', 'done'] as const).map((f) => (
               <button
@@ -166,7 +228,15 @@ export const TasksWidget = () => {
                 ) : (
                   <Square className="h-4 w-4 shrink-0 text-[var(--page-muted)] group-hover:text-emerald-400" />
                 )}
-                <span className="truncate font-medium">{t.title}</span>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="truncate font-medium">{t.title}</span>
+                  {(t.dueDate || t.recurring) && (
+                    <div className="flex gap-2 text-[9px] text-[var(--page-muted)] font-mono">
+                      {t.dueDate && <span className="flex items-center gap-0.5"><Calendar className="h-2.5 w-2.5" /> {t.dueDate}</span>}
+                      {t.recurring && <span className="flex items-center gap-0.5"><Repeat className="h-2.5 w-2.5" /> {t.recurring}</span>}
+                    </div>
+                  )}
+                </div>
               </button>
 
               <div className="flex items-center gap-1.5 shrink-0">

@@ -7,6 +7,11 @@ export interface Bookmark {
   title: string;
   url?: string;
   children?: Bookmark[];
+  category?: string;
+  usageCount?: number;
+  lastUsed?: number;
+  status?: 'active' | 'dead';
+  isFolder?: boolean;
 }
 
 export const BookmarkProvider: Provider<Bookmark[]> = {

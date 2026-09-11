@@ -9,18 +9,39 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const { currentWorkspace, workspaces, setCurrentWorkspace, focusMode } = useAppStore();
+  const { currentWorkspace, workspaces, setCurrentWorkspace, focusMode, keyboardShortcuts } = useAppStore();
   const [isPinned, setIsPinned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isIdle, setIsIdle] = useState(false);
 
-  const isVisible = isPinned || isHovered;
+  React.useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    const resetIdle = () => {
+      setIsIdle(false);
+      clearTimeout(timeout);
+      timeout = setTimeout(() => setIsIdle(true), 15000);
+    };
+    
+    // Initial setup
+    resetIdle();
+
+    window.addEventListener('mousemove', resetIdle);
+    window.addEventListener('keydown', resetIdle);
+    return () => {
+      window.removeEventListener('mousemove', resetIdle);
+      window.removeEventListener('keydown', resetIdle);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  const isVisible = isPinned || isHovered || !isIdle;
 
   return (
     <div className="command-shell min-h-screen overflow-x-hidden px-4 py-3 sm:px-8 sm:py-5" data-page="dashboard">
-      <div className="mx-auto flex max-w-[1500px] flex-col gap-5 relative">
+      <div className="mx-auto flex max-w-[1500px] flex-col relative pt-16 sm:pt-20">
         {/* Auto-Hiding Command Deck Topbar Container */}
         <div 
-          className="command-topbar-wrapper group/topbar relative z-30"
+          className="command-topbar-wrapper group/topbar absolute top-0 left-0 right-0 z-30"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onFocus={() => setIsHovered(true)}
@@ -106,6 +127,15 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
               <div className="hidden sm:flex items-center gap-2 text-xs text-[var(--page-muted)] bg-[var(--surface-strong)]/40 px-3 py-1.5 rounded-xl border border-[var(--surface-line)]">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#10b981] animate-ping" />
                 <span className="font-mono text-[11px]">Online</span>
+              </div>
+              
+              <div 
+                className="hidden md:flex items-center gap-1.5 text-xs text-[var(--page-muted)] bg-[var(--surface-strong)]/40 px-2.5 py-1.5 rounded-xl border border-[var(--surface-line)] cursor-pointer hover:border-cyan-500/50 hover:text-cyan-400 transition-colors"
+                title="Open Command Palette"
+                onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
+              >
+                <Command className="h-3.5 w-3.5" />
+                <span className="font-mono text-[11px] font-bold uppercase">{keyboardShortcuts.openPalette === 'mod+k' ? 'Ctrl + K' : keyboardShortcuts.openPalette}</span>
               </div>
 
               {/* Pin/Unpin Button */}

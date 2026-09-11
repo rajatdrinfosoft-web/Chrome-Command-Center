@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Command, LayoutGrid, RefreshCw, Search, Settings } from 'lucide-react';
+import { Command, LayoutGrid, RefreshCw, Search, Settings, Timer, ListTodo } from 'lucide-react';
 import { useWidgetContext } from '../context/WidgetContext';
 import { CommandAction, useAppStore } from '../stores/appStore';
 
@@ -42,8 +42,8 @@ export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPalet
     if (action === 'focus-search') window.dispatchEvent(new Event('command-center:focus-search'));
     if (action === 'settings') onOpenSettings();
     if (action === 'toggle-widgets') setEnabledWidgets(enabledWidgets.length > 2 ? ['clock', 'search'] : [
-      'clock', 'search', 'tasks', 'notes', 'bookmarks', 'tabs', 'history',
-      'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups',
+      'clock', 'search', 'workspaces', 'calendar', 'weather', 'recentWork', 'tasks', 'notes', 'bookmarks', 'tabs', 'history',
+      'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'
     ]);
     if (action === 'reload') window.location.reload();
   };
@@ -90,11 +90,80 @@ export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPalet
 
   const filteredCommands = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
+    
+    const paramCommands: PaletteCommand[] = [];
+    
+    const timerMatch = normalizedQuery.match(/^(?:timer|start timer)\s+(\d+)$/);
+    if (timerMatch) {
+      paramCommands.push({
+        id: 'param-timer',
+        label: `Start a timer for ${timerMatch[1]} minutes`,
+        keywords: 'timer',
+        shortcut: 'Enter',
+        icon: Timer,
+        run: () => window.dispatchEvent(new CustomEvent('command-center:start-timer', { detail: parseInt(timerMatch[1]) * 60 }))
+      });
+    }
+
+    const taskMatch = normalizedQuery.match(/^(?:new task|task|add task)\s+(.+)$/);
+    if (taskMatch) {
+      paramCommands.push({
+        id: 'param-task',
+        label: `Create task: "${taskMatch[1]}"`,
+        keywords: 'task new add',
+        shortcut: 'Enter',
+        icon: ListTodo,
+        run: () => window.dispatchEvent(new CustomEvent('command-center:add-task', { detail: taskMatch[1] }))
+      });
+    }
+
     if (!normalizedQuery) return commands;
-    return commands.filter(({ label, keywords }) =>
-      `${label} ${keywords}`.toLowerCase().includes(normalizedQuery)
-    );
+    
+    const scoredCommands = commands.map(cmd => {
+      const target = `${cmd.label} ${cmd.keywords}`.toLowerCase();
+      let score = 0;
+      
+      if (target.includes(normalizedQuery)) {
+        score = 100;
+        if (target.startsWith(normalizedQuery)) score += 50;
+      } else {
+        let qIdx = 0;
+        for (let i = 0; i < target.length && qIdx < normalizedQuery.length; i++) {
+          if (target[i] === normalizedQuery[qIdx]) {
+            qIdx++;
+          }
+        }
+        if (qIdx === normalizedQuery.length) {
+          score = 50 - target.length; 
+        }
+      }
+      return { cmd, score };
+    }).filter(c => c.score > -1000 && c.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(c => c.cmd);
+
+    return [...paramCommands, ...scoredCommands];
   }, [commands, query]);
+
+  const inlineSuggestion = useMemo(() => {
+    const qLower = query.toLowerCase();
+    if (!qLower) return '';
+    
+    const templates = ['timer ', 'start timer ', 'new task ', 'add task '];
+    for (const temp of templates) {
+      if (temp.startsWith(qLower) && temp !== qLower) {
+        return query + temp.slice(qLower.length);
+      }
+    }
+    
+    if (filteredCommands.length > 0) {
+      const firstLabel = filteredCommands[0].label.toLowerCase();
+      if (firstLabel.startsWith(qLower) && firstLabel !== qLower) {
+        return query + filteredCommands[0].label.slice(qLower.length);
+      }
+    }
+    return '';
+  }, [query, filteredCommands]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -157,20 +226,37 @@ export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPalet
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
       <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
-        <div className="flex items-center gap-3 px-4 border-b border-neutral-800">
-          <Command className="w-5 h-5 text-cyan-400" aria-hidden="true" />
-          <input
-            autoFocus
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setSelectedIndex(0);
-            }}
-            placeholder="Type a command..."
-            aria-label="Command search"
-            className="w-full bg-transparent py-4 text-white text-lg focus:outline-none placeholder:text-neutral-600"
-          />
-          <kbd className="hidden sm:inline-flex rounded border border-neutral-700 px-2 py-1 text-xs text-neutral-500">Esc</kbd>
+        <div className="flex items-center gap-3 px-4 border-b border-neutral-800 relative">
+          <Command className="w-5 h-5 text-cyan-400 z-10" aria-hidden="true" />
+          <div className="relative flex-1 flex items-center overflow-hidden">
+            {inlineSuggestion && (
+              <div className="absolute inset-0 py-4 text-lg text-neutral-600 pointer-events-none flex items-center whitespace-pre overflow-hidden">
+                <span className="opacity-0">{query}</span>
+                <span>{inlineSuggestion.slice(query.length)}</span>
+              </div>
+            )}
+            <input
+              autoFocus
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setSelectedIndex(0);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Tab' && inlineSuggestion) {
+                  e.preventDefault();
+                  setQuery(inlineSuggestion);
+                } else if (e.key === 'ArrowRight' && inlineSuggestion && (e.target as HTMLInputElement).selectionStart === query.length) {
+                  e.preventDefault();
+                  setQuery(inlineSuggestion);
+                }
+              }}
+              placeholder="Type a command..."
+              aria-label="Command search"
+              className="w-full bg-transparent py-4 text-white text-lg focus:outline-none placeholder:text-neutral-600 z-10 relative"
+            />
+          </div>
+          <kbd className="hidden sm:inline-flex rounded border border-neutral-700 px-2 py-1 text-xs text-neutral-500 z-10">Esc</kbd>
         </div>
 
         <div className="p-2" role="listbox" aria-label="Commands">

@@ -5,6 +5,8 @@ export interface Workspace {
   id: string;
   name: string;
   color: string;
+  enabledWidgets?: string[];
+  widgetOrder?: string[];
 }
 
 export interface FocusSession {
@@ -88,9 +90,27 @@ const createWorkspaceId = () => {
 };
 
 const defaultWorkspaces: Workspace[] = [
-  { id: 'default', name: 'Default', color: '#22d3ee' },
-  { id: 'work', name: 'Work', color: '#a78bfa' },
-  { id: 'personal', name: 'Personal', color: '#34d399' },
+  { 
+    id: 'default', 
+    name: 'Default', 
+    color: '#22d3ee',
+    enabledWidgets: ['clock', 'search', 'workspaces', 'calendar', 'weather', 'recentWork', 'tasks', 'notes', 'bookmarks', 'tabs', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'],
+    widgetOrder: ['workspaces', 'calendar', 'weather', 'recentWork', 'bookmarks', 'tabs', 'tasks', 'notes', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo']
+  },
+  { 
+    id: 'work', 
+    name: 'Work', 
+    color: '#a78bfa',
+    enabledWidgets: ['clock', 'search', 'workspaces', 'calendar', 'recentWork', 'tasks', 'pomodoro', 'notes', 'analytics', 'statistics', 'github'],
+    widgetOrder: ['workspaces', 'calendar', 'recentWork', 'tasks', 'pomodoro', 'notes', 'analytics', 'statistics', 'github']
+  },
+  { 
+    id: 'personal', 
+    name: 'Personal', 
+    color: '#34d399',
+    enabledWidgets: ['clock', 'search', 'workspaces', 'bookmarks', 'tabs', 'history', 'recentlyClosed', 'quickTools', 'sessions'],
+    widgetOrder: ['workspaces', 'bookmarks', 'tabs', 'history', 'recentlyClosed', 'quickTools', 'sessions']
+  },
 ];
 
 const defaultBlockedSites = ['youtube.com', 'reddit.com', 'x.com'];
@@ -109,21 +129,40 @@ export const useAppStore = create<AppState>()(
       reducedMotion: false,
       setReducedMotion: (reducedMotion) => set({ reducedMotion }),
       currentWorkspace: 'default',
-      setCurrentWorkspace: (workspaceId) => set({ currentWorkspace: workspaceId }),
+      setCurrentWorkspace: (workspaceId) => set((state) => {
+        const workspace = state.workspaces.find(w => w.id === workspaceId);
+        if (!workspace) return { currentWorkspace: workspaceId };
+        
+        const defaultEnabled = ['clock', 'search', 'workspaces', 'calendar', 'weather', 'recentWork', 'tasks', 'notes', 'bookmarks', 'tabs', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'];
+        const defaultOrder = ['workspaces', 'calendar', 'weather', 'recentWork', 'bookmarks', 'tabs', 'tasks', 'notes', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'];
+
+        return { 
+          currentWorkspace: workspaceId,
+          enabledWidgets: workspace.enabledWidgets || defaultEnabled,
+          widgetOrder: workspace.widgetOrder || defaultOrder
+        };
+      }),
       workspaces: defaultWorkspaces,
       createWorkspace: (name) => {
         const trimmed = name.trim();
         if (!trimmed) return;
 
+        const defaultEnabled = ['clock', 'search', 'workspaces', 'calendar', 'weather', 'recentWork', 'tasks', 'notes', 'bookmarks', 'tabs', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'];
+        const defaultOrder = ['workspaces', 'calendar', 'weather', 'recentWork', 'bookmarks', 'tabs', 'tasks', 'notes', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'];
+
         const workspace: Workspace = {
           id: createWorkspaceId(),
           name: trimmed,
           color: ['#22d3ee', '#a78bfa', '#f59e0b', '#34d399', '#f472b6'][Math.floor(Math.random() * 5)],
+          enabledWidgets: defaultEnabled,
+          widgetOrder: defaultOrder,
         };
 
         set((state) => ({
           workspaces: [...state.workspaces, workspace],
           currentWorkspace: workspace.id,
+          enabledWidgets: defaultEnabled,
+          widgetOrder: defaultOrder,
         }));
       },
       renameWorkspace: (workspaceId, name) => {
@@ -140,17 +179,27 @@ export const useAppStore = create<AppState>()(
         set((state) => {
           const nextWorkspaces = state.workspaces.filter((workspace) => workspace.id !== workspaceId);
           const fallbackWorkspace = nextWorkspaces[0]?.id ?? 'default';
+          
+          const targetWorkspace = nextWorkspaces.find(w => w.id === fallbackWorkspace);
 
           return {
             workspaces: nextWorkspaces.length ? nextWorkspaces : defaultWorkspaces,
             currentWorkspace: state.currentWorkspace === workspaceId ? fallbackWorkspace : state.currentWorkspace,
+            ...(state.currentWorkspace === workspaceId ? { enabledWidgets: targetWorkspace?.enabledWidgets || ['clock', 'search', 'workspaces', 'calendar', 'weather', 'recentWork', 'tasks', 'notes', 'bookmarks', 'tabs', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'] } : {}),
+            ...(state.currentWorkspace === workspaceId ? { widgetOrder: targetWorkspace?.widgetOrder || ['workspaces', 'calendar', 'weather', 'recentWork', 'bookmarks', 'tabs', 'tasks', 'notes', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'] } : {})
           };
         });
       },
-      enabledWidgets: ['clock', 'search', 'tasks', 'notes', 'bookmarks', 'tabs', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups'],
-      setEnabledWidgets: (widgets) => set({ enabledWidgets: widgets }),
-      widgetOrder: ['bookmarks', 'tabs', 'tasks', 'notes', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups'],
-      setWidgetOrder: (widgets) => set({ widgetOrder: widgets }),
+      enabledWidgets: ['clock', 'search', 'workspaces', 'calendar', 'weather', 'recentWork', 'tasks', 'notes', 'bookmarks', 'tabs', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'],
+      setEnabledWidgets: (widgets) => set((state) => ({ 
+        enabledWidgets: widgets,
+        workspaces: state.workspaces.map(w => w.id === state.currentWorkspace ? { ...w, enabledWidgets: widgets } : w)
+      })),
+      widgetOrder: ['workspaces', 'calendar', 'weather', 'recentWork', 'bookmarks', 'tabs', 'tasks', 'notes', 'history', 'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'],
+      setWidgetOrder: (widgets) => set((state) => ({ 
+        widgetOrder: widgets,
+        workspaces: state.workspaces.map(w => w.id === state.currentWorkspace ? { ...w, widgetOrder: widgets } : w)
+      })),
       layoutPresets: [],
       saveLayoutPreset: (name) => {
         const trimmedName = name.trim();

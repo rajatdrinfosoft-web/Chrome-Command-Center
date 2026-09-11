@@ -147,32 +147,30 @@ export const PomodoroWidget = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* Header & Mode Toggles */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-            <Sparkles className="h-3.5 w-3.5" />
-          </span>
-          <h2 className="text-sm font-semibold tracking-wide text-neutral-200">Focus & Pomodoro</h2>
+          <Sparkles className="h-4 w-4 text-[var(--widget-accent)]" />
+          <span className="command-kicker text-[var(--widget-accent)]">FOCUS & POMODORO</span>
         </div>
 
         <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => setIsZenOpen(true)}
-            className="flex items-center gap-1 rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-1 text-[11px] font-medium text-neutral-300 hover:border-cyan-500/40 hover:text-white transition-all"
+            className="flex items-center gap-1 rounded-lg border border-[var(--surface-line)] bg-[var(--surface-strong)] px-2 py-1 text-[11px] font-medium text-[var(--page-muted)] hover:border-[var(--widget-accent)]/40 hover:text-[var(--page-ink)] transition-all"
             title="Open Zen Fullscreen Mode"
           >
-            <Maximize2 className="h-3 w-3 text-cyan-400" />
+            <Maximize2 className="h-3 w-3 text-[var(--widget-accent)]" />
             <span>Zen Mode</span>
           </button>
 
           <button
             type="button"
             onClick={() => setFocusMode(!focusMode)}
-            className={`rounded-lg px-2 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all ${
+            className={`rounded-lg px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-all border ${
               focusMode
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                : 'bg-neutral-800/80 text-neutral-400 hover:text-neutral-200'
+                ? 'bg-[var(--widget-accent)]/20 text-[var(--widget-accent)] border-[var(--widget-accent)]/30'
+                : 'bg-[var(--surface-strong)]/80 text-[var(--page-muted)] border-[var(--surface-line)] hover:text-[var(--page-ink)]'
             }`}
           >
             {focusMode ? 'Shield On' : 'Shield Off'}

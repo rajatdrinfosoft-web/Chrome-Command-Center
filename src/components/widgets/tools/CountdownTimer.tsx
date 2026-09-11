@@ -5,9 +5,22 @@ export const CountdownTimer = () => {
   const [active, setActive] = useState(false);
 
   useEffect(() => {
+    const handleStartTimer = (e: Event) => {
+      const duration = (e as CustomEvent<number>).detail;
+      setSeconds(duration);
+      setActive(true);
+    };
+
+    window.addEventListener('command-center:start-timer', handleStartTimer);
+    return () => window.removeEventListener('command-center:start-timer', handleStartTimer);
+  }, []);
+
+  useEffect(() => {
     if (active && seconds > 0) {
       const timer = setTimeout(() => setSeconds(seconds - 1), 1000);
       return () => clearTimeout(timer);
+    } else if (seconds === 0) {
+      setActive(false);
     }
   }, [active, seconds]);
 

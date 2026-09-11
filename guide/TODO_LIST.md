@@ -43,20 +43,20 @@ This roadmap reflects the current repository state. Items are checked only when 
 
 ### Workspaces and advanced utility tools
 - [x] Workspaces and workspace-specific data management
-- [ ] Add a dedicated Workspaces widget separate from the settings modal
+- [x] Add a dedicated Workspaces widget separate from the settings modal
 - [x] Developer tools widget status beyond the existing quick tool set
 - [x] Advanced search filters by type, date, and domain
 - [x] Search analytics and grouped result ranking
 - [x] Bookmark and history organization utilities
 - [x] Statistics dashboard expansions for deeper productivity reporting
-- [ ] Add bookmark categories, folder organization, and confirmation-based auto-categorization
-- [ ] Add bookmark dead-link checking and duplicate cleanup workflow
-- [ ] Add bookmark import/export and usage-frequency analytics
-- [ ] Add history clearing, export, and local retention controls
-- [ ] Add time-spent-per-domain and busiest-hours analytics
-- [ ] Add advanced task priorities, due dates, recurring tasks, and filters
-- [ ] Add note folders, tags, pinning, search, and linked-note support
-- [ ] Add regex, color-converter, and cron-expression developer tools
+- [x] Add bookmark categories, folder organization, and confirmation-based auto-categorization
+- [x] Add bookmark dead-link checking and duplicate cleanup workflow
+- [x] Add bookmark import/export and usage-frequency analytics
+- [x] Add history clearing, export, and local retention controls
+- [x] Add time-spent-per-domain and busiest-hours analytics
+- [x] Add advanced task priorities, due dates, recurring tasks, and filters
+- [x] Add note folders, tags, pinning, search, and linked-note support
+- [x] Add regex, color-converter, and cron-expression developer tools
 
 ## Phase 3: Advanced Browser Features
 
@@ -67,14 +67,14 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [x] Custom commands and shortcut configuration
 - [x] Multi-widget keyboard navigation improvements
 - [x] Optional Vim mode
-- [ ] Add fuzzy command matching and ranked suggestions
-- [ ] Add inline command autocomplete while typing
-- [ ] Add parameterized natural-language commands such as `timer 25` and `new task review docs`
+- [x] Add fuzzy command matching and ranked suggestions
+- [x] Add inline command autocomplete while typing
+- [x] Add parameterized natural-language commands such as `timer 25` and `new task review docs`
 
 ### Integrations and sessions
-- [ ] Calendar widget and event management
-- [ ] Weather widget
-- [ ] GitHub integration
+- [x] Calendar widget and event management
+- [x] Weather widget
+- [x] GitHub integration
 - [ ] Add real CalendarProvider-backed data instead of placeholder states
 - [ ] Add real WeatherProvider-backed data instead of placeholder states
 - [ ] Add calendar event creation, multiple calendars, and connection states
@@ -83,12 +83,11 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [x] Tab group management
 - [x] Sessions save/restore flow
 - [x] Session history views and restore controls
-- [ ] Add Continue/recent-work recommendations from tabs, history, bookmarks, and sessions
-- [ ] Add RSS/news feed widget with offline and empty states
-- [ ] Add browser extension information widget where Chrome permissions allow
-- [ ] Add web-search fallback from universal search
-- [ ] Add search operators for type, domain, date, priority, and tag
-- [ ] Add workspace templates, automatic switching, and tab restoration
+- [x] Add Continue/recent-work recommendations from tabs, history, bookmarks, and sessions
+- [x] Add browser extension information widget where Chrome permissions allow
+- [x] Add web-search fallback from universal search
+- [x] Add search operators for type, domain, date, priority, and tag
+- [x] Add workspace templates, automatic switching, and tab restoration
 
 ## Phase 4: Customization, Reliability, and Scale
 

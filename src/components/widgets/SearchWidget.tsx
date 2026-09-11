@@ -18,11 +18,35 @@ const getDomain = (url: string) => {
 
 export const SearchWidget = () => {
   const [query, setQuery] = useState('');
-  const [type, setType] = useState<SearchType>('all');
-  const [domain, setDomain] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const recordSearchQuery = useAppStore((state) => state.recordSearchQuery);
+  const { recordSearchQuery, keyboardShortcuts } = useAppStore();
+
+  const parseQuery = (q: string) => {
+    let rawQuery = q.toLowerCase();
+    const typeMatch = rawQuery.match(/type:(bookmark|history|tab)/);
+    const domainMatch = rawQuery.match(/domain:([a-z0-9.-]+)/);
+    const tagMatch = rawQuery.match(/tag:([a-z0-9]+)/);
+    
+    let typeFilter = 'all';
+    let domainFilter = '';
+    let tagFilter = '';
+
+    if (typeMatch) {
+      typeFilter = typeMatch[1];
+      rawQuery = rawQuery.replace(typeMatch[0], '');
+    }
+    if (domainMatch) {
+      domainFilter = domainMatch[1];
+      rawQuery = rawQuery.replace(domainMatch[0], '');
+    }
+    if (tagMatch) {
+      tagFilter = tagMatch[1];
+      rawQuery = rawQuery.replace(tagMatch[0], '');
+    }
+
+    return { rawQuery: rawQuery.trim(), typeFilter, domainFilter, tagFilter };
+  };
 
   useEffect(() => {
     const focusSearch = () => inputRef.current?.focus();
@@ -41,16 +65,17 @@ export const SearchWidget = () => {
     });
   }, []);
 
+  const { rawQuery, typeFilter, domainFilter, tagFilter } = parseQuery(query);
+
   const filteredResults = results.filter((item) => {
-    const normalizedQuery = query.trim().toLowerCase();
-    const matchesQuery = !normalizedQuery || `${item.title} ${item.url}`.toLowerCase().includes(normalizedQuery);
-    const matchesType = type === 'all' || item.type === type;
-    const matchesDomain = !domain.trim() || getDomain(item.url).includes(domain.trim().toLowerCase());
+    const matchesQuery = !rawQuery || `${item.title} ${item.url}`.toLowerCase().includes(rawQuery);
+    const matchesType = typeFilter === 'all' || item.type === typeFilter;
+    const matchesDomain = !domainFilter || getDomain(item.url).includes(domainFilter);
+    // For bookmarks we might have tags but mock data doesn't right now, just support parsing it
     return matchesQuery && matchesType && matchesDomain;
   }).sort((left, right) => {
-    const queryLower = query.trim().toLowerCase();
-    const leftExact = left.title.toLowerCase().startsWith(queryLower) ? 1 : 0;
-    const rightExact = right.title.toLowerCase().startsWith(queryLower) ? 1 : 0;
+    const leftExact = left.title.toLowerCase().startsWith(rawQuery) ? 1 : 0;
+    const rightExact = right.title.toLowerCase().startsWith(rawQuery) ? 1 : 0;
     return rightExact - leftExact;
   }).slice(0, 6);
 
@@ -73,15 +98,14 @@ export const SearchWidget = () => {
   return (
     <div className="flex flex-col gap-3">
       {/* Header and Shortcut Indicator */}
-      <div className="flex items-center justify-between px-1">
+      <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-2">
-          <span className="command-kicker text-cyan-400">UNIVERSAL OMNI-SEARCH</span>
+          <Search className="h-4 w-4 text-[var(--widget-accent)]" />
+          <span className="command-kicker text-[var(--widget-accent)]">WEB & HISTORY SEARCH</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <kbd className="flex items-center gap-1 rounded-md border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-mono font-bold text-cyan-300 shadow-[0_0_8px_rgba(40,215,209,0.2)]">
-            <span>Ctrl</span>
-            <span>+</span>
-            <span>K</span>
+          <kbd className="flex items-center gap-1 rounded-full border border-[var(--widget-accent)]/30 bg-[var(--widget-accent)]/10 px-2 py-0.5 text-[10px] font-mono font-bold text-[var(--widget-accent)] shadow-[0_0_8px_rgba(var(--widget-accent-rgb),0.2)] uppercase">
+            {keyboardShortcuts.focusSearch === '/' ? 'Slash ( / )' : keyboardShortcuts.focusSearch}
           </kbd>
         </div>
       </div>
@@ -94,7 +118,13 @@ export const SearchWidget = () => {
           type="text"
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
-          placeholder="Search bookmarks, history, open tabs across system..."
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && query.trim() && !filteredResults.length) {
+              window.open(`https://google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+              setQuery('');
+            }
+          }}
+          placeholder="Search web, bookmarks, history, open tabs..."
           className="w-full bg-transparent py-3.5 pl-11 pr-24 text-sm font-medium text-[var(--page-ink)] placeholder:text-[var(--page-muted)] focus:outline-none"
         />
         {query && (
@@ -113,9 +143,9 @@ export const SearchWidget = () => {
         <div className="flex items-center gap-1 rounded-xl bg-[var(--surface-strong)]/80 p-1 border border-[var(--surface-line)]">
           <button
             type="button"
-            onClick={() => setType('all')}
+            onClick={() => setQuery(query.replace(/type:(bookmark|history|tab)\s?/, ''))}
             className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-              type === 'all'
+              typeFilter === 'all'
                 ? 'bg-cyan-500 text-neutral-950 shadow-sm'
                 : 'text-[var(--page-muted)] hover:text-[var(--page-ink)]'
             }`}
@@ -124,9 +154,9 @@ export const SearchWidget = () => {
           </button>
           <button
             type="button"
-            onClick={() => setType('bookmark')}
+            onClick={() => setQuery(query.includes('type:bookmark') ? query.replace(/type:bookmark\s?/, '') : query + ' type:bookmark')}
             className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-              type === 'bookmark'
+              typeFilter === 'bookmark'
                 ? 'bg-rose-500 text-neutral-950 shadow-sm'
                 : 'text-[var(--page-muted)] hover:text-[var(--page-ink)]'
             }`}
@@ -135,9 +165,9 @@ export const SearchWidget = () => {
           </button>
           <button
             type="button"
-            onClick={() => setType('history')}
+            onClick={() => setQuery(query.includes('type:history') ? query.replace(/type:history\s?/, '') : query + ' type:history')}
             className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-              type === 'history'
+              typeFilter === 'history'
                 ? 'bg-purple-500 text-neutral-950 shadow-sm'
                 : 'text-[var(--page-muted)] hover:text-[var(--page-ink)]'
             }`}
@@ -146,9 +176,9 @@ export const SearchWidget = () => {
           </button>
           <button
             type="button"
-            onClick={() => setType('tab')}
+            onClick={() => setQuery(query.includes('type:tab') ? query.replace(/type:tab\s?/, '') : query + ' type:tab')}
             className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-              type === 'tab'
+              typeFilter === 'tab'
                 ? 'bg-amber-500 text-neutral-950 shadow-sm'
                 : 'text-[var(--page-muted)] hover:text-[var(--page-ink)]'
             }`}
@@ -158,8 +188,12 @@ export const SearchWidget = () => {
         </div>
 
         <input
-          value={domain}
-          onChange={(event) => setDomain(event.target.value)}
+          value={domainFilter}
+          onChange={(event) => {
+             const val = event.target.value;
+             const q = query.replace(/domain:[a-z0-9.-]+\s?/, '');
+             setQuery(val ? `${q} domain:${val}` : q);
+          }}
           placeholder="Filter domain (e.g. github.com)..."
           className="min-w-0 flex-1 rounded-xl border border-[var(--surface-line)] bg-[var(--surface-strong)]/60 px-3 py-1.5 text-xs text-[var(--page-ink)] placeholder:text-[var(--page-muted)] focus:outline-none focus:border-cyan-500/50"
         />
@@ -197,9 +231,14 @@ export const SearchWidget = () => {
               </a>
             ))
           ) : (
-            <p className="px-3 py-4 text-center text-xs text-[var(--page-muted)]">
-              No matching bookmarks, history, or open tabs found.
-            </p>
+            <div className="px-3 py-4 text-center">
+              <p className="text-sm font-medium text-[var(--page-ink)]">
+                Press <kbd className="mx-1 rounded bg-[var(--surface-line)] px-1.5 py-0.5 text-xs text-cyan-400">Enter</kbd> to search the web for "{query}"
+              </p>
+              <p className="mt-1 text-[11px] text-[var(--page-muted)]">
+                No matching bookmarks, history, or open tabs found.
+              </p>
+            </div>
           )}
         </div>
       )}

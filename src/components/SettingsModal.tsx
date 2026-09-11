@@ -103,82 +103,13 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
 
   return (
     <div className="fixed inset-0 bg-neutral-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50" role="presentation">
-      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-lg shadow-2xl p-6 text-neutral-100" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-        <div className="mb-6 flex items-center justify-between">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col text-neutral-100 max-h-[90vh]" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div className="flex-none p-6 pb-4 border-b border-neutral-800 flex items-center justify-between">
           <h2 id="settings-title" className="text-xl font-semibold">Settings</h2>
-          <button type="button" onClick={onClose} aria-label="Close settings" className="text-xs text-neutral-500 hover:text-white">Close</button>
+          <button type="button" onClick={onClose} aria-label="Close settings" className="text-xs font-medium text-neutral-400 hover:text-white bg-neutral-800 hover:bg-neutral-700 px-3 py-1.5 rounded-lg transition-colors">Close</button>
         </div>
 
-        <div className="space-y-6">
-          <div>
-            <label className="mb-2 block text-sm font-medium">Workspace</label>
-            <div className="space-y-3">
-              <select
-                value={currentWorkspace}
-                onChange={(event) => setCurrentWorkspace(event.target.value)}
-                className="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-2 text-sm"
-              >
-                {workspaces.map((workspace) => (
-                  <option key={workspace.id} value={workspace.id}>
-                    {workspace.name}
-                  </option>
-                ))}
-              </select>
-
-              <div className="flex gap-2">
-                <input
-                  value={newWorkspaceName}
-                  onChange={(event) => setNewWorkspaceName(event.target.value)}
-                  placeholder="New workspace name"
-                  className="flex-1 rounded-lg border border-neutral-800 bg-neutral-950 p-2 text-sm placeholder:text-neutral-500"
-                />
-                <button
-                  type="button"
-                  onClick={handleCreateWorkspace}
-                  className="rounded-lg bg-cyan-500 px-3 py-2 text-sm font-medium text-black"
-                >
-                  Add
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                {workspaces.map((workspace) => (
-                  <div key={workspace.id} className="flex items-center justify-between gap-2 rounded-lg border border-neutral-800 bg-neutral-950/60 p-2">
-                    <button
-                      type="button"
-                      onClick={() => setCurrentWorkspace(workspace.id)}
-                      className={`flex items-center gap-2 text-sm ${currentWorkspace === workspace.id ? 'text-cyan-300' : 'text-neutral-300'}`}
-                    >
-                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: workspace.color }} />
-                      {workspace.name}
-                    </button>
-                    {workspace.id !== 'default' && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const nextName = window.prompt('Rename workspace', workspace.name);
-                          if (nextName) renameWorkspace(workspace.id, nextName);
-                        }}
-                        className="text-[11px] text-neutral-500 hover:text-white"
-                      >
-                        Rename
-                      </button>
-                    )}
-                    {workspace.id !== 'default' && (
-                      <button
-                        type="button"
-                        onClick={() => deleteWorkspace(workspace.id)}
-                        className="text-[11px] text-red-400 hover:text-red-300"
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
+        <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
           <div>
             <label className="mb-2 block text-sm font-medium">Keyboard control</label>
             <div className="space-y-3 rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
@@ -265,7 +196,7 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
           <div>
             <label className="mb-2 block text-sm font-medium">Widgets</label>
             <div className="space-y-2">
-              {['tasks', 'notes', 'bookmarks', 'tabs', 'history', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups'].map((id) => (
+              {['workspaces', 'tasks', 'notes', 'bookmarks', 'tabs', 'history', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups'].map((id) => (
                 <label key={id} className="flex items-center gap-2 text-sm text-neutral-300">
                   <input
                     type="checkbox"
