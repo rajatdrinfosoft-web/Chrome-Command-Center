@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, X, Shield, Coffee, Sparkles, Maximize2, Minimize2, Bell } from 'lucide-react';
+import { Play, Pause, RotateCcw, X, Shield, Coffee, Sparkles, Maximize2, Minimize2, Bell, Headphones, Volume2, VolumeX } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { playNotificationChime } from '../../lib/audioNotifier';
+import { ambientAudio } from '../../lib/audio/ambientGenerator';
 
 interface ZenFocusOverlayProps {
   isOpen: boolean;
@@ -35,6 +36,25 @@ export const ZenFocusOverlay = ({
 }: ZenFocusOverlayProps) => {
   const { blockedSites, focusSessions } = useAppStore();
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isAmbientPlaying, setIsAmbientPlaying] = useState(false);
+  const [ambientType, setAmbientType] = useState(ambientAudio.getType());
+
+  useEffect(() => {
+    return () => {
+      // Ensure we stop audio when the overlay closes/unmounts
+      ambientAudio.stop();
+    };
+  }, []);
+
+  const toggleAmbientSound = () => {
+    if (isAmbientPlaying) {
+      ambientAudio.stop();
+      setIsAmbientPlaying(false);
+    } else {
+      ambientAudio.play();
+      setIsAmbientPlaying(true);
+    }
+  };
 
   const displayTime = isBreak ? breakTimeLeft : timeLeft;
   const totalSeconds = isBreak ? 5 * 60 : sessionLength * 60;
@@ -87,6 +107,44 @@ export const ZenFocusOverlay = ({
           </div>
 
           <div className="flex items-center gap-2">
+            <div className={`flex items-center rounded-xl border transition-all ${
+              isAmbientPlaying
+                ? 'bg-cyan-500/20 border-cyan-500/50'
+                : 'bg-neutral-900/80 border-neutral-800'
+            }`}>
+              <button
+                type="button"
+                onClick={toggleAmbientSound}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs transition-colors ${
+                  isAmbientPlaying ? 'text-cyan-200' : 'text-neutral-300 hover:text-white'
+                }`}
+                title="Toggle Ambient Focus Noise"
+              >
+                {isAmbientPlaying ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+                <span className="hidden sm:inline">Ambient Focus</span>
+              </button>
+              
+              <div className="h-4 w-[1px] bg-neutral-700 mx-1" />
+              
+              <select
+                className={`appearance-none bg-transparent py-1.5 px-2 pr-3 text-xs outline-none cursor-pointer transition-colors ${
+                  isAmbientPlaying ? 'text-cyan-200' : 'text-neutral-400 hover:text-neutral-300'
+                }`}
+                value={ambientType}
+                onChange={(e) => {
+                  const type = e.target.value as any;
+                  ambientAudio.setType(type);
+                  setAmbientType(type);
+                }}
+                title="Select Ambient Sound"
+              >
+                <option value="deep_focus" className="bg-neutral-900 text-neutral-200">Deep Focus (Brown Noise)</option>
+                <option value="rain" className="bg-neutral-900 text-neutral-200">Heavy Rain</option>
+                <option value="ocean" className="bg-neutral-900 text-neutral-200">Ocean Waves</option>
+                <option value="bowl" className="bg-neutral-900 text-neutral-200">Zen Singing Bowl</option>
+              </select>
+            </div>
+
             <button
               type="button"
               onClick={toggleFullscreenMode}
@@ -98,7 +156,11 @@ export const ZenFocusOverlay = ({
             </button>
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => {
+                ambientAudio.stop();
+                setIsAmbientPlaying(false);
+                onClose();
+              }}
               className="flex h-8 w-8 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900/80 text-neutral-400 hover:border-red-500/40 hover:text-white transition-all"
               aria-label="Close Zen Mode"
             >

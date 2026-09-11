@@ -123,8 +123,22 @@ export const WidgetGrid = () => {
       </section>
 
       {featuredIds.length > 0 && (
-        <section className="grid grid-cols-1 gap-6 lg:grid-cols-2" aria-label="Focus and developer tools">
-          {featuredIds.map(renderWidget)}
+        <section aria-label="Focus and developer tools" className="relative rounded-3xl border border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-transparent p-6 sm:p-8">
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(40,215,209,0.15)]">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </span>
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-cyan-500">Power Tools</h2>
+                <p className="text-[11px] text-neutral-500">Accelerated focus & utilities</p>
+              </div>
+            </div>
+            <div className="h-px flex-1 bg-gradient-to-r from-cyan-500/20 to-transparent mx-6 hidden sm:block" />
+          </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 relative z-10">
+            {featuredIds.map(renderWidget)}
+          </div>
         </section>
       )}
 
