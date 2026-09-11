@@ -1,3 +1,5 @@
+/// <reference types="chrome" />
+declare var chrome: any;
 export interface ExtensionMessage {
   type: string;
   [key: string]: any;

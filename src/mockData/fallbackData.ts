@@ -59,11 +59,16 @@ export const fallbackTabs: FallbackTab[] = [
 ];
 
 export const fallbackHistory: FallbackHistoryItem[] = [
+  { id: '1', title: 'GitHub: Issues', url: 'https://github.com/issues' },
   { id: '2', title: 'React Hook Docs', url: 'https://react.dev/reference/react' },
   { id: '3', title: 'Tailwind Components', url: 'https://tailwindcss.com/docs' },
   { id: '4', title: 'Chrome DevTools', url: 'https://developer.chrome.com/docs/devtools/' },
   { id: '5', title: 'Notion Workspace', url: 'https://www.notion.so' },
   { id: '6', title: 'Figma Prototype', url: 'https://www.figma.com/file/' },
+  { id: '7', title: 'TypeScript Utility Types', url: 'https://www.typescriptlang.org/docs/handbook/utility-types.html' },
+  { id: '8', title: 'Vercel Deployment', url: 'https://vercel.com/dashboard' },
+  { id: '9', title: 'Framer Motion: Animation', url: 'https://www.framer.com/motion/animation/' },
+  { id: '10', title: 'Stack Overflow: React Hooks', url: 'https://stackoverflow.com/questions/53332321' },
 ];
 
 export const fallbackRecentlyClosedTabs: FallbackClosedTab[] = [

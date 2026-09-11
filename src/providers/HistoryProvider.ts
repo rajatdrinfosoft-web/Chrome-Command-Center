@@ -17,9 +17,15 @@ export const HistoryProvider: Provider<HistoryItem[]> = {
       const cached = localStorage.getItem('history_cache');
       if (cached) return JSON.parse(cached);
 
-      const data = await ExtensionBridge.send<HistoryItem[]>({ type: 'GET_HISTORY' });
-      localStorage.setItem('history_cache', JSON.stringify(data));
-      return data.length ? data : fallbackHistory.map((item, index) => ({
+      const data = await ExtensionBridge.send<any[]>({ type: 'GET_HISTORY' });
+      const mappedData = data.map((item: any) => ({
+        id: item.id,
+        title: item.title || item.url,
+        url: item.url,
+        visitedAt: item.lastVisitTime || item.visitedAt
+      }));
+      localStorage.setItem('history_cache', JSON.stringify(mappedData));
+      return mappedData.length ? mappedData : fallbackHistory.map((item, index) => ({
         ...item,
         visitedAt: Date.now() - (index + 1) * 1000 * 60 * 60 * 8,
       }));
