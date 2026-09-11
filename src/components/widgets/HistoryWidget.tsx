@@ -23,7 +23,7 @@ const formatTime = (timestamp?: number) => {
   const date = new Date(timestamp);
   const now = new Date();
   const diff = now.getTime() - date.getTime();
-  
+
   if (diff < 60000) return 'Just now';
   if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
   if (diff < 86400000 && now.getDate() === date.getDate()) {
@@ -181,58 +181,62 @@ export const HistoryWidget = () => {
         </div>
       </div>
 
-      <div className="flex-1 space-y-3 mt-2 overflow-y-auto pr-1 custom-scrollbar">
-        {Object.entries(groupedHistory).length === 0 ? (
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-4 text-center text-xs text-[var(--page-muted)]">
-            No matching history entries.
-          </motion.p>
-        ) : (
-          <AnimatePresence>
-            {Object.entries(groupedHistory).map(([domain, items], index) => (
-              <motion.div
-                key={domain}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2, delay: index * 0.05 }}
-                className="group rounded-xl border border-[var(--surface-line)] bg-[var(--surface-strong)]/30 p-3 hover:border-[var(--widget-accent)]/30 transition-all hover:shadow-md"
-              >
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <img 
-                      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=16`} 
-                      alt="" 
-                      className="h-3 w-3 opacity-80"
-                      onError={(e) => (e.currentTarget.style.display = 'none')}
-                    />
-                    <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--widget-accent)] truncate">
-                      {domain}
-                    </div>
-                  </div>
-                  <span className="text-[9px] font-mono font-medium text-[var(--page-muted)] bg-[var(--surface-line)]/50 px-1.5 py-0.5 rounded">
-                    {items.length} {items.length === 1 ? 'VISIT' : 'VISITS'}
-                  </span>
-                </div>
-                <ul className="space-y-1.5">
-                  {items.map((item) => (
-                    <li key={item.id} className="group/item flex items-center justify-between gap-2 text-xs text-[var(--page-ink)] truncate hover:text-[var(--widget-accent)] transition-colors cursor-pointer">
-                      <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex-1 truncate pr-2" title={item.title}>
-                        {item.title}
-                      </a>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[10px] text-[var(--page-muted)] font-mono">{formatTime(item.visitedAt)}</span>
-                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="opacity-0 group-hover/item:opacity-100 transition-opacity">
-                          <ExternalLink className="h-3 w-3 text-[var(--page-muted)] hover:text-[var(--widget-accent)]" />
-                        </a>
+      <div className="mt-2 flex-1 overflow-hidden rounded-xl border border-[var(--surface-line)] bg-[var(--surface-strong)]/20">
+        <div className="h-[260px] overflow-y-auto overflow-x-hidden pr-1 custom-scrollbar">
+          <div className="space-y-3 p-2">
+            {Object.entries(groupedHistory).length === 0 ? (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8 text-center text-xs text-[var(--page-muted)]">
+                No matching history entries.
+              </motion.p>
+            ) : (
+              <AnimatePresence>
+                {Object.entries(groupedHistory).map(([domain, items], index) => (
+                  <motion.div
+                    key={domain}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2, delay: index * 0.05 }}
+                    className="group rounded-xl border border-[var(--surface-line)] bg-[var(--surface-strong)]/30 p-3 hover:border-[var(--widget-accent)]/30 transition-all hover:shadow-md"
+                  >
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <img
+                          src={`https://www.google.com/s2/favicons?domain=${domain}&sz=16`}
+                          alt=""
+                          className="h-3 w-3 opacity-80"
+                          onError={(e) => (e.currentTarget.style.display = 'none')}
+                        />
+                        <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--widget-accent)] truncate">
+                          {domain}
+                        </div>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        )}
+                      <span className="text-[9px] font-mono font-medium text-[var(--page-muted)] bg-[var(--surface-line)]/50 px-1.5 py-0.5 rounded">
+                        {items.length} {items.length === 1 ? 'VISIT' : 'VISITS'}
+                      </span>
+                    </div>
+                    <ul className="space-y-1.5">
+                      {items.map((item) => (
+                        <li key={item.id} className="group/item flex items-center justify-between gap-2 text-xs text-[var(--page-ink)] truncate hover:text-[var(--widget-accent)] transition-colors cursor-pointer">
+                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex-1 truncate pr-2" title={item.title}>
+                            {item.title}
+                          </a>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-[10px] text-[var(--page-muted)] font-mono">{formatTime(item.visitedAt)}</span>
+                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="opacity-0 group-hover/item:opacity-100 transition-opacity">
+                              <ExternalLink className="h-3 w-3 text-[var(--page-muted)] hover:text-[var(--widget-accent)]" />
+                            </a>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

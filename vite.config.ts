@@ -2,9 +2,38 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
-import {defineConfig, Plugin} from 'vite';
+import { defineConfig, Plugin } from 'vite';
 
-// LINT.IfChange(aistudio_media_plugin)
+function copyExtensionFiles(): Plugin {
+  return {
+    name: 'copy-extension-files',
+    closeBundle() {
+      const outDir = path.resolve(__dirname, 'dist');
+      const publicDir = path.resolve(__dirname, 'public');
+
+      fs.mkdirSync(outDir, { recursive: true });
+
+      const manifestSrc = path.join(publicDir, 'manifest.json');
+      const manifestDest = path.join(outDir, 'manifest.json');
+      if (fs.existsSync(manifestSrc)) {
+        fs.copyFileSync(manifestSrc, manifestDest);
+      }
+
+      const backgroundSrc = path.join(publicDir, 'background.js');
+      const backgroundDest = path.join(outDir, 'background.js');
+      if (fs.existsSync(backgroundSrc)) {
+        fs.copyFileSync(backgroundSrc, backgroundDest);
+      }
+
+      const assetsSrc = path.join(publicDir, 'assets');
+      const assetsDest = path.join(outDir, 'assets');
+      if (fs.existsSync(assetsSrc)) {
+        fs.cpSync(assetsSrc, assetsDest, { recursive: true });
+      }
+    },
+  };
+}
+
 function aistudioMediaPlugin(): Plugin {
   return {
     name: 'vite-plugin-aistudio-media',
@@ -62,21 +91,21 @@ function aistudioMediaPlugin(): Plugin {
     },
   };
 }
-// LINT.ThenChange(//depot/google3/java/com/google/alkali/boq/makersuite/applet_dev_service/templates/initializers/react_theme/vite.config.ts:aistudio_media_plugin)
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), aistudioMediaPlugin()],
+    plugins: [react(), tailwindcss(), aistudioMediaPlugin(), copyExtensionFiles()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: {
+      outDir: 'dist',
+      emptyOutDir: true,
+    },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };

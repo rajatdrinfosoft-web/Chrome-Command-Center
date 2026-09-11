@@ -36,8 +36,12 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
 
   const isVisible = isPinned || isHovered || !isIdle;
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, ' ');
-  const switchWorkspace = (workspaceId: string) => {
+  const revealTopbar = () => {
+    setIsIdle(false);
     setIsHovered(true);
+  };
+  const switchWorkspace = (workspaceId: string) => {
+    revealTopbar();
     setCurrentWorkspace(workspaceId);
   };
 
@@ -47,9 +51,9 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
         {/* Auto-Hiding Command Deck Topbar Container */}
         <div 
           className="command-topbar-wrapper group/topbar absolute top-0 left-0 right-0 z-30"
-          onMouseEnter={() => setIsHovered(true)}
+          onMouseEnter={revealTopbar}
           onMouseLeave={() => setIsHovered(false)}
-          onFocus={() => setIsHovered(true)}
+          onFocus={revealTopbar}
           onBlur={(e) => {
             if (!e.currentTarget.contains(e.relatedTarget)) {
               setIsHovered(false);
@@ -62,11 +66,17 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
               isVisible ? 'opacity-0 -translate-y-2 pointer-events-none h-0' : 'opacity-100 translate-y-0 h-6'
             }`}
           >
-            <div className="cursor-pointer flex items-center gap-2 rounded-full border border-cyan-500/30 bg-[var(--surface)] px-3.5 py-0.5 text-[10px] font-mono font-semibold tracking-wider text-cyan-400 shadow-[0_0_15px_rgba(40,215,209,0.25)] backdrop-blur-md hover:border-cyan-400 hover:scale-105 transition-all">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
+            <button
+              type="button"
+              onClick={revealTopbar}
+              className="cursor-pointer flex items-center gap-2 rounded-full border border-cyan-500/30 bg-[var(--surface)] px-3.5 py-0.5 text-[10px] font-mono font-semibold tracking-wider text-cyan-400 shadow-[0_0_15px_rgba(40,215,209,0.25)] backdrop-blur-md hover:border-cyan-400 hover:scale-105 transition-all"
+            >
+              <span className="relative flex h-4 w-4 items-center justify-center rounded-md bg-gradient-to-br from-cyan-400 to-teal-600 text-[8px] text-neutral-950 shadow-[0_0_12px_rgba(40,215,209,0.3)]">
+                <Terminal className="h-2.5 w-2.5" />
+              </span>
               <span>COMMAND DECK</span>
               <ChevronDown className="h-3 w-3 text-cyan-400 animate-bounce" />
-            </div>
+            </button>
           </div>
 
           {/* Sliding Topbar Navigation */}
@@ -81,7 +91,9 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
             {/* Logo & System Brand */}
             <div className="flex items-center gap-3.5">
               <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-teal-600 text-sm font-black text-neutral-950 shadow-[0_0_20px_rgba(40,215,209,0.35)] transition-transform hover:scale-105">
-                <Terminal className="h-4.5 w-4.5" />
+                <div className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.22),_transparent_40%),linear-gradient(135deg,#22d3ee,#0f766e)] text-[10px] font-black text-neutral-950 shadow-[0_0_14px_rgba(34,211,238,0.4)]">
+                  <Terminal className="h-3.7 w-3.7" />
+                </div>
               </div>
               <div>
                 <div className="flex items-center gap-2">
