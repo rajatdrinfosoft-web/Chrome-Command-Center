@@ -3,7 +3,7 @@
   "name": "Chrome Command Center",
   "version": "1.0.0",
   "description": "Advanced, futuristic browser workspace.",
-  "permissions": ["bookmarks", "tabs", "history", "storage"],
+  "permissions": ["bookmarks", "tabs", "history", "storage", "sessions", "alarms", "management"],
   "chrome_url_overrides": {
     "newtab": "index.html"
   },

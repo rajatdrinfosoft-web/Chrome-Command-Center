@@ -5,8 +5,8 @@ export const ExtensionInfoWidget = () => {
   const [version, setVersion] = useState('0.0.0');
   
   useEffect(() => {
-    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getManifest) {
-      setVersion(chrome.runtime.getManifest().version);
+    if (typeof chrome !== 'undefined' && chrome.runtime && (chrome.runtime as any).getManifest) {
+      setVersion((chrome.runtime as any).getManifest().version || '1.0.0-ext');
     } else {
       setVersion('1.0.0-dev');
     }
