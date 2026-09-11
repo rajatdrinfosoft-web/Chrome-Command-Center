@@ -53,7 +53,7 @@ export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPalet
       id: 'focus-search',
       label: 'Focus universal search',
       keywords: 'search find bookmarks history tabs',
-      shortcut: 'Cmd K',
+      shortcut: 'Ctrl + K',
       icon: Search,
       run: () => runAction('focus-search'),
     },

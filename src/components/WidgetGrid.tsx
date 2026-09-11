@@ -46,10 +46,35 @@ export const WidgetGrid = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
 
+  const getWidgetAccent = (id: string) => {
+    switch (id) {
+      case 'bookmarks':
+      case 'analytics':
+        return 'coral';
+      case 'tasks':
+      case 'pomodoro':
+      case 'sessionHeatmap':
+        return 'emerald';
+      case 'tabs':
+      case 'tabGroups':
+      case 'quickTools':
+        return 'amber';
+      case 'history':
+      case 'sessions':
+        return 'purple';
+      case 'recentlyClosed':
+        return 'rose';
+      default:
+        return 'cyan';
+    }
+  };
+
   const renderWidget = (id: string) => {
     const widgetIndex = widgetIds.indexOf(id);
     const WidgetComponent = WIDGET_MAP[id];
     if (!WidgetComponent) return null;
+    const accent = getWidgetAccent(id);
+
     return (
       <motion.div
         key={id} 
@@ -72,8 +97,8 @@ export const WidgetGrid = () => {
         onDragEnd={() => setDraggedWidget(null)}
         aria-label={`${id} widget`}
         variants={itemVariants}
-        data-accent={['bookmarks', 'history', 'analytics'].includes(id) ? 'coral' : ['tasks', 'notes', 'sessions'].includes(id) ? 'lime' : ['tabs', 'tabGroups', 'statistics'].includes(id) ? 'amber' : undefined}
-        className={`command-widget min-h-[150px] rounded-2xl p-5 text-[var(--page-ink)] transition-all duration-300 sm:p-6 ${reducedMotion ? '' : 'command-reveal'} ${reducedMotion ? '' : `command-reveal-delay-${(widgetIndex % 3) + 1}`}`}
+        data-accent={accent}
+        className={`command-widget group relative min-h-[160px] rounded-2xl p-5 sm:p-6 text-[var(--page-ink)] transition-all duration-300 shadow-lg ${reducedMotion ? '' : 'command-reveal'} ${reducedMotion ? '' : `command-reveal-delay-${(widgetIndex % 3) + 1}`}`}
       >
         <WidgetComponent />
       </motion.div>

@@ -2,27 +2,43 @@
 
 :root {
 	--accent-color: #28d7d1;
+	--accent-glow: rgba(40, 215, 209, 0.25);
 	--page-background: #071014;
 	--page-ink: #f4f7f2;
 	--page-muted: #91a4a5;
-	--surface: rgba(16, 30, 33, 0.78);
-	--surface-strong: #102326;
-	--surface-line: rgba(150, 207, 202, 0.16);
-	--grid-line: rgba(127, 220, 211, 0.06);
-	--accent-coral: #ff8066;
+	--surface: rgba(13, 24, 28, 0.72);
+	--surface-strong: #0e1c1f;
+	--surface-line: rgba(150, 207, 202, 0.14);
+	--grid-line: rgba(127, 220, 211, 0.05);
+	--accent-coral: #ff7559;
+	--accent-coral-glow: rgba(255, 117, 89, 0.25);
+	--accent-emerald: #10b981;
+	--accent-emerald-glow: rgba(16, 185, 129, 0.25);
 	--accent-lime: #b8e35b;
+	--accent-lime-glow: rgba(184, 227, 91, 0.25);
 	--accent-amber: #f5bd58;
+	--accent-amber-glow: rgba(245, 189, 88, 0.25);
+	--accent-purple: #a855f7;
+	--accent-purple-glow: rgba(168, 85, 247, 0.25);
+	--accent-rose: #f43f5e;
+	--accent-rose-glow: rgba(244, 63, 94, 0.25);
 	--custom-background: none;
 }
 
 :root[data-theme='light'] {
 	--page-background: #edf3ef;
-	--page-ink: #172326;
-	--page-muted: #607275;
-	--surface: rgba(255, 255, 252, 0.82);
+	--page-ink: #142023;
+	--page-muted: #576d70;
+	--surface: rgba(255, 255, 252, 0.85);
 	--surface-strong: #ffffff;
-	--surface-line: rgba(35, 71, 72, 0.15);
-	--grid-line: rgba(35, 117, 112, 0.09);
+	--surface-line: rgba(35, 71, 72, 0.16);
+	--grid-line: rgba(35, 117, 112, 0.07);
+	--accent-glow: rgba(40, 215, 209, 0.18);
+	--accent-coral-glow: rgba(255, 117, 89, 0.18);
+	--accent-emerald-glow: rgba(16, 185, 129, 0.18);
+	--accent-amber-glow: rgba(245, 189, 88, 0.18);
+	--accent-purple-glow: rgba(168, 85, 247, 0.18);
+	--accent-rose-glow: rgba(244, 63, 94, 0.18);
 	color-scheme: light;
 }
 
@@ -91,7 +107,7 @@ body {
 	margin: 0;
 	background: var(--page-background);
 	color: var(--page-ink);
-	font-family: 'Trebuchet MS', 'Avenir Next', sans-serif;
+	font-family: 'Trebuchet MS', 'Avenir Next', system-ui, sans-serif;
 }
 
 button,
@@ -105,8 +121,9 @@ textarea {
 	position: relative;
 	isolation: isolate;
 	background:
-		radial-gradient(circle at 15% 0%, rgba(40, 215, 209, 0.12), transparent 28rem),
-		radial-gradient(circle at 92% 16%, rgba(255, 128, 102, 0.09), transparent 22rem),
+		radial-gradient(circle at 15% 0%, rgba(40, 215, 209, 0.14), transparent 32rem),
+		radial-gradient(circle at 88% 18%, rgba(255, 117, 89, 0.11), transparent 26rem),
+		radial-gradient(circle at 50% 70%, rgba(168, 85, 247, 0.07), transparent 35rem),
 		var(--page-background);
 }
 
@@ -114,48 +131,166 @@ textarea {
 	position: absolute;
 	inset: 0;
 	z-index: -1;
-	background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-	background-size: 42px 42px;
+	background-image: 
+		linear-gradient(var(--grid-line) 1px, transparent 1px),
+		linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+	background-size: 38px 38px;
 	content: '';
-	mask-image: linear-gradient(to bottom, black, transparent 78%);
+	mask-image: linear-gradient(to bottom, black 20%, transparent 85%);
 	pointer-events: none;
 }
 
 .command-topbar {
 	border: 1px solid var(--surface-line);
-	background: color-mix(in srgb, var(--surface) 76%, transparent);
-	box-shadow: 0 16px 50px rgba(0, 0, 0, 0.14);
-	backdrop-filter: blur(18px);
+	background: color-mix(in srgb, var(--surface) 82%, transparent);
+	box-shadow: 
+		0 20px 50px -10px rgba(0, 0, 0, 0.35),
+		inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(24px) saturate(180%);
+	-webkit-backdrop-filter: blur(24px) saturate(180%);
 }
 
+/* Enhanced Widget Multi-Layered Backdrop Blur & Z-Axis Depth */
 .command-widget {
+	--widget-accent: var(--accent-color);
+	--widget-accent-glow: var(--accent-glow);
 	position: relative;
+	isolation: isolate;
 	overflow: hidden;
-	border: 1px solid var(--surface-line);
-	background: var(--surface);
-	box-shadow: 0 18px 45px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-	backdrop-filter: blur(18px);
+	border-radius: 1.25rem;
+	border: 1px solid color-mix(in srgb, var(--widget-accent) 24%, var(--surface-line));
+	background: 
+		linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 45%),
+		var(--surface);
+	backdrop-filter: blur(28px) saturate(200%);
+	-webkit-backdrop-filter: blur(28px) saturate(200%);
+	box-shadow: 
+		0 24px 50px -12px rgba(0, 0, 0, 0.45),
+		0 8px 20px -6px rgba(0, 0, 0, 0.3),
+		0 0 0 1px rgba(255, 255, 255, 0.04),
+		inset 0 1px 0 rgba(255, 255, 255, 0.12),
+		0 0 20px -4px var(--widget-accent-glow);
+	animation: pulseBorderGlow 5s ease-in-out infinite alternate;
 }
 
+/* Layer 1: Ambient Under-Glass Diffuser (Blur radius: 8px) */
+.command-widget::after {
+	position: absolute;
+	inset: -1px;
+	z-index: -1;
+	border-radius: inherit;
+	background: radial-gradient(circle at 50% 0%, var(--widget-accent-glow), transparent 70%);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	opacity: 0.65;
+	pointer-events: none;
+	content: '';
+}
+
+/* Top Accent Glow Bar */
 .command-widget::before {
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
 	height: 3px;
-	background: var(--widget-accent, var(--accent-color));
+	background: linear-gradient(90deg, transparent 5%, var(--widget-accent) 50%, transparent 95%);
 	content: '';
 	opacity: 0.9;
+	filter: drop-shadow(0 0 8px var(--widget-accent));
+	animation: pulseAccentBar 4s ease-in-out infinite alternate;
+	z-index: 2;
+}
+
+/* Layer 3: Nested controls and inner surface elements with distinct blur (Blur radius: 12px) */
+.command-widget input,
+.command-widget textarea,
+.command-widget select,
+.command-widget ul > li,
+.command-widget .command-sublayer {
+	backdrop-filter: blur(12px) saturate(160%);
+	-webkit-backdrop-filter: blur(12px) saturate(160%);
 }
 
 .command-widget:hover {
-	border-color: color-mix(in srgb, var(--widget-accent, var(--accent-color)) 55%, var(--surface-line));
+	border-color: color-mix(in srgb, var(--widget-accent) 65%, var(--surface-line));
+	box-shadow: 
+		0 30px 60px -10px rgba(0, 0, 0, 0.6),
+		0 12px 28px -6px rgba(0, 0, 0, 0.35),
+		0 0 30px 2px var(--widget-accent-glow),
+		inset 0 1px 0 rgba(255, 255, 255, 0.18);
 	transform: translateY(-3px);
 }
 
-.command-widget[data-accent='coral'] { --widget-accent: var(--accent-coral); }
-.command-widget[data-accent='lime'] { --widget-accent: var(--accent-lime); }
-.command-widget[data-accent='amber'] { --widget-accent: var(--accent-amber); }
+/* Category Accent Palette Mappings */
+.command-widget[data-accent='cyan'] {
+	--widget-accent: var(--accent-color);
+	--widget-accent-glow: var(--accent-glow);
+}
+.command-widget[data-accent='coral'] {
+	--widget-accent: var(--accent-coral);
+	--widget-accent-glow: var(--accent-coral-glow);
+}
+.command-widget[data-accent='emerald'] {
+	--widget-accent: var(--accent-emerald);
+	--widget-accent-glow: var(--accent-emerald-glow);
+}
+.command-widget[data-accent='lime'] {
+	--widget-accent: var(--accent-lime);
+	--widget-accent-glow: var(--accent-lime-glow);
+}
+.command-widget[data-accent='amber'] {
+	--widget-accent: var(--accent-amber);
+	--widget-accent-glow: var(--accent-amber-glow);
+}
+.command-widget[data-accent='purple'] {
+	--widget-accent: var(--accent-purple);
+	--widget-accent-glow: var(--accent-purple-glow);
+}
+.command-widget[data-accent='rose'] {
+	--widget-accent: var(--accent-rose);
+	--widget-accent-glow: var(--accent-rose-glow);
+}
+
+/* Gentle Glow & Shimmer Keyframes */
+@keyframes pulseBorderGlow {
+	0% {
+		border-color: color-mix(in srgb, var(--widget-accent) 18%, var(--surface-line));
+		box-shadow: 
+			0 20px 45px -12px rgba(0, 0, 0, 0.45),
+			0 0 14px -6px var(--widget-accent-glow),
+			inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+	50% {
+		border-color: color-mix(in srgb, var(--widget-accent) 36%, var(--surface-line));
+		box-shadow: 
+			0 22px 48px -12px rgba(0, 0, 0, 0.48),
+			0 0 22px -2px var(--widget-accent-glow),
+			inset 0 1px 0 rgba(255, 255, 255, 0.12);
+	}
+	100% {
+		border-color: color-mix(in srgb, var(--widget-accent) 24%, var(--surface-line));
+		box-shadow: 
+			0 20px 45px -12px rgba(0, 0, 0, 0.45),
+			0 0 16px -4px var(--widget-accent-glow),
+			inset 0 1px 0 rgba(255, 255, 255, 0.09);
+	}
+}
+
+@keyframes pulseAccentBar {
+	0% {
+		opacity: 0.6;
+		transform: scaleX(0.85);
+	}
+	50% {
+		opacity: 1;
+		transform: scaleX(1);
+	}
+	100% {
+		opacity: 0.75;
+		transform: scaleX(0.92);
+	}
+}
 
 .command-kicker {
 	color: var(--page-muted);
@@ -168,12 +303,20 @@ textarea {
 .command-search {
 	border: 1px solid var(--surface-line);
 	background: color-mix(in srgb, var(--surface-strong) 84%, transparent);
-	box-shadow: 0 20px 70px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(24px) saturate(180%);
+	-webkit-backdrop-filter: blur(24px) saturate(180%);
+	box-shadow: 
+		0 20px 60px rgba(0, 0, 0, 0.28),
+		inset 0 1px 0 rgba(255, 255, 255, 0.08),
+		0 0 20px -8px var(--accent-glow);
 }
 
 .command-search:focus-within {
 	border-color: var(--accent-color);
-	box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 15%, transparent), 0 20px 70px rgba(0, 0, 0, 0.2);
+	box-shadow: 
+		0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent),
+		0 0 28px 2px var(--accent-glow),
+		0 25px 70px rgba(0, 0, 0, 0.35);
 }
 
 @keyframes commandReveal {
