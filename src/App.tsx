@@ -11,19 +11,47 @@ import { SettingsModal } from './components/SettingsModal';
 import { useState, useEffect } from 'react';
 import { useAppStore } from './stores/appStore';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { DeveloperToolsDialog } from './components/DeveloperToolsDialog';
 
 export default function App() {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { keyboardShortcuts, customCommands, theme, accentColor, backgroundMode, customBackground, reducedMotion } = useAppStore();
+  const [isDeveloperToolsOpen, setIsDeveloperToolsOpen] = useState(false);
+  const [requestedTool, setRequestedTool] = useState<string | null>(null);
+  const {
+    keyboardShortcuts,
+    customCommands,
+    theme,
+    accentColor,
+    backgroundMode,
+    customBackground,
+    reducedMotion,
+    fontFamily,
+    spacingScale,
+    radiusScale,
+    animationIntensity,
+    enabledWidgets,
+    setEnabledWidgets,
+  } = useAppStore();
+
+  useEffect(() => {
+    const homeOnlyWidgets = ['quickTools', 'workspaces'];
+    if (enabledWidgets.some((widgetId) => homeOnlyWidgets.includes(widgetId))) {
+      setEnabledWidgets(enabledWidgets.filter((widgetId) => !homeOnlyWidgets.includes(widgetId)));
+    }
+  }, [enabledWidgets, setEnabledWidgets]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.background = backgroundMode;
     document.documentElement.dataset.reducedMotion = reducedMotion ? 'true' : 'false';
+    document.documentElement.dataset.font = fontFamily;
+    document.documentElement.dataset.spacing = spacingScale;
+    document.documentElement.dataset.radius = radiusScale;
+    document.documentElement.dataset.animation = animationIntensity;
     document.documentElement.style.setProperty('--accent-color', accentColor);
     document.documentElement.style.setProperty('--custom-background', customBackground ? `url(${customBackground})` : 'none');
-  }, [accentColor, backgroundMode, customBackground, reducedMotion, theme]);
+  }, [accentColor, animationIntensity, backgroundMode, customBackground, fontFamily, radiusScale, reducedMotion, spacingScale, theme]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -55,8 +83,22 @@ export default function App() {
         setIsSettingsOpen(false);
       }
     };
+    const handleOpenToolbox = () => {
+      setRequestedTool(null);
+      setIsDeveloperToolsOpen(true);
+    };
+    const handleOpenTool = (event: Event) => {
+      setRequestedTool((event as CustomEvent<string>).detail);
+      setIsDeveloperToolsOpen(true);
+    };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('command-center:open-toolbox', handleOpenToolbox);
+    window.addEventListener('command-center:open-tool', handleOpenTool);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('command-center:open-toolbox', handleOpenToolbox);
+      window.removeEventListener('command-center:open-tool', handleOpenTool);
+    };
   }, [customCommands, keyboardShortcuts.focusSearch, keyboardShortcuts.openPalette]);
 
   return (
@@ -67,6 +109,7 @@ export default function App() {
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <DeveloperToolsDialog isOpen={isDeveloperToolsOpen} initialTool={requestedTool} onClose={() => setIsDeveloperToolsOpen(false)} />
       <OfflineIndicator />
       <DashboardLayout>
         <WidgetGrid />

@@ -16,6 +16,26 @@ const getDomain = (url: string) => {
   }
 };
 
+const getSiteUrl = (value: string) => {
+  const trimmedValue = value.trim();
+  if (!trimmedValue || /\s/.test(trimmedValue)) return null;
+
+  const withProtocol = /^https?:\/\//i.test(trimmedValue) ? trimmedValue : `https://${trimmedValue}`;
+  try {
+    const parsedUrl = new URL(withProtocol);
+    if (!parsedUrl.hostname.includes('.')) return null;
+
+    // Correct the common keyboard typo in the example domain before opening it.
+    if (!/^https?:\/\//i.test(trimmedValue) && parsedUrl.hostname.endsWith('.cpm')) {
+      parsedUrl.hostname = `${parsedUrl.hostname.slice(0, -4)}.com`;
+    }
+
+    return parsedUrl.href;
+  } catch {
+    return null;
+  }
+};
+
 export const SearchWidget = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -84,6 +104,13 @@ export const SearchWidget = () => {
     if (value.trim().length > 2) recordSearchQuery(value);
   };
 
+  const openSiteOrSearch = () => {
+    const siteUrl = getSiteUrl(query);
+    const destination = siteUrl ?? `https://www.google.com/search?q=${encodeURIComponent(query.trim())}`;
+    window.open(destination, '_blank', 'noopener,noreferrer');
+    setQuery('');
+  };
+
   const getTypeBadge = (itemType: 'bookmark' | 'history' | 'tab') => {
     switch (itemType) {
       case 'bookmark':
@@ -119,9 +146,8 @@ export const SearchWidget = () => {
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && query.trim() && !filteredResults.length) {
-              window.open(`https://google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-              setQuery('');
+            if (e.key === 'Enter' && query.trim() && (Boolean(getSiteUrl(query)) || !filteredResults.length)) {
+              openSiteOrSearch();
             }
           }}
           placeholder="Search web, bookmarks, history, open tabs..."
@@ -194,7 +220,7 @@ export const SearchWidget = () => {
              const q = query.replace(/domain:[a-z0-9.-]+\s?/, '');
              setQuery(val ? `${q} domain:${val}` : q);
           }}
-          placeholder="Filter domain (e.g. github.com)..."
+          placeholder="Filter domain (e.g. example.com)..."
           className="min-w-0 flex-1 rounded-xl border border-[var(--surface-line)] bg-[var(--surface-strong)]/60 px-3 py-1.5 text-xs text-[var(--page-ink)] placeholder:text-[var(--page-muted)] focus:outline-none focus:border-cyan-500/50"
         />
       </div>
@@ -232,9 +258,16 @@ export const SearchWidget = () => {
             ))
           ) : (
             <div className="px-3 py-4 text-center">
-              <p className="text-sm font-medium text-[var(--page-ink)]">
-                Press <kbd className="mx-1 rounded bg-[var(--surface-line)] px-1.5 py-0.5 text-xs text-cyan-400">Enter</kbd> to search the web for "{query}"
-              </p>
+              {getSiteUrl(query) ? (
+                <button type="button" onClick={openSiteOrSearch} className="mx-auto flex items-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/20">
+                  <ExternalLink className="h-4 w-4" />
+                  Open {getSiteUrl(query)}
+                </button>
+              ) : (
+                <p className="text-sm font-medium text-[var(--page-ink)]">
+                  Press <kbd className="mx-1 rounded bg-[var(--surface-line)] px-1.5 py-0.5 text-xs text-cyan-400">Enter</kbd> to search the web for "{query}"
+                </p>
+              )}
               <p className="mt-1 text-[11px] text-[var(--page-muted)]">
                 No matching bookmarks, history, or open tabs found.
               </p>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Command, LayoutGrid, RefreshCw, Search, Settings, Timer, ListTodo } from 'lucide-react';
+import { Command, LayoutGrid, RefreshCw, Search, Settings, Timer, ListTodo, Wrench } from 'lucide-react';
 import { useWidgetContext } from '../context/WidgetContext';
 import { CommandAction, useAppStore } from '../stores/appStore';
 
@@ -43,7 +43,7 @@ export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPalet
     if (action === 'settings') onOpenSettings();
     if (action === 'toggle-widgets') setEnabledWidgets(enabledWidgets.length > 2 ? ['clock', 'search'] : [
       'clock', 'search', 'workspaces', 'calendar', 'weather', 'recentWork', 'tasks', 'notes', 'bookmarks', 'tabs', 'history',
-      'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups', 'github', 'extensionInfo'
+      'recentlyClosed', 'pomodoro', 'analytics', 'sessionHeatmap', 'statistics', 'sessions', 'tabGroups', 'extensionInfo'
     ]);
     if (action === 'reload') window.location.reload();
   };
@@ -78,6 +78,28 @@ export const CommandPalette = ({ isOpen, onClose, onOpenSettings }: CommandPalet
       icon: RefreshCw,
       run: () => runAction('reload'),
     },
+    {
+      id: 'open-focus',
+      label: 'Open Zen Focus Mode',
+      keywords: 'focus pomodoro timer zen fullscreen break',
+      shortcut: 'Ctrl Shift F',
+      icon: Timer,
+      run: () => window.dispatchEvent(new Event('command-center:open-focus')),
+    },
+    {
+      id: 'open-developer-tools',
+      label: 'Open Developer Utilities',
+      keywords: 'developer tools utilities json regex base64 calculator',
+      icon: Wrench,
+      run: () => window.dispatchEvent(new Event('command-center:open-toolbox')),
+    },
+    ...['json', 'regex', 'base64', 'url', 'jwt', 'uuid', 'hash', 'calc', 'pass', 'unit', 'text', 'qr', 'cdown', 'color', 'cron'].map((toolId) => ({
+      id: `open-tool-${toolId}`,
+      label: `Open ${toolId === 'cdown' ? 'countdown timer' : toolId}`,
+      keywords: `developer utility tool ${toolId}`,
+      icon: Wrench,
+      run: () => window.dispatchEvent(new CustomEvent('command-center:open-tool', { detail: toolId })),
+    })),
     ...customCommands.map((customCommand) => ({
       id: customCommand.id,
       label: customCommand.label,

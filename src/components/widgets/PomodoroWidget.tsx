@@ -36,6 +36,12 @@ export const PomodoroWidget = () => {
 
   const timerRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    const handleOpenFocus = () => setIsZenOpen(true);
+    window.addEventListener('command-center:open-focus', handleOpenFocus);
+    return () => window.removeEventListener('command-center:open-focus', handleOpenFocus);
+  }, []);
+
   // Timer Ticking Logic
   useEffect(() => {
     if (isActive) {

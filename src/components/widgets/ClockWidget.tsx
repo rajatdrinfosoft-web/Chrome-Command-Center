@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Clock as ClockIcon, Globe } from 'lucide-react';
 
 export const ClockWidget = () => {
   const [time, setTime] = useState(new Date());
@@ -21,21 +20,8 @@ export const ClockWidget = () => {
   const formattedSeconds = seconds.toString().padStart(2, '0');
   const period = hours >= 12 ? 'PM' : 'AM';
 
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-2">
-          <ClockIcon className="h-4 w-4 text-[var(--widget-accent)]" />
-          <span className="command-kicker text-[var(--widget-accent)]">LOCAL TIME</span>
-        </div>
-        <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.2em] font-mono text-[var(--widget-accent)] bg-[var(--widget-accent)]/10 px-2 py-0.5 rounded-full border border-[var(--widget-accent)]/20">
-          <Globe className="h-3 w-3" />
-          {timezone}
-        </span>
-      </div>
-
       <div className="flex items-center gap-3">
         <div 
           onClick={() => setIs24Hour(!is24Hour)}

@@ -74,12 +74,10 @@ This roadmap reflects the current repository state. Items are checked only when 
 ### Integrations and sessions
 - [x] Calendar widget and event management
 - [x] Weather widget
-- [x] GitHub integration
 - [ ] Add real CalendarProvider-backed data instead of placeholder states
 - [ ] Add real WeatherProvider-backed data instead of placeholder states
 - [ ] Add calendar event creation, multiple calendars, and connection states
 - [ ] Add weather location management, forecasts, and cached responses
-- [ ] Add GitHub repositories, pull requests, issues, and notifications
 - [x] Tab group management
 - [x] Sessions save/restore flow
 - [x] Session history views and restore controls
@@ -96,11 +94,11 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [x] Layout presets and saved dashboard states
 - [x] Background customization and export/import of theme settings
 - [x] Widget drag-and-drop ordering and persistence
-- [ ] Full settings categories for privacy, integrations, and performance
-- [ ] Add permission center with explanations and connection status
-- [ ] Add layout preset templates for minimal, productivity, developer, and focus modes
-- [ ] Add widget size and minimum-size configuration
-- [ ] Add custom font, spacing, border-radius, and animation controls
+- [x] Full settings categories for privacy, integrations, and performance
+- [x] Add permission center with explanations and connection status
+- [x] Add layout preset templates for minimal, productivity, developer, and focus modes
+- [x] Add widget size and minimum-size configuration
+- [x] Add custom font, spacing, border-radius, and animation controls
 
 ### Data integrity and sync
 - [x] Backup and restore flows for local data
@@ -115,6 +113,7 @@ This roadmap reflects the current repository state. Items are checked only when 
 - [ ] Accessibility audit for ARIA labels, contrast, and keyboard flow
 - [ ] Unit and integration tests for providers and services
 - [ ] Provider loading, empty, and error-state testing
+- [x] Isolate widget rendering failures with per-widget error boundaries
 - [ ] Performance audit for startup and widget rendering
 - [ ] Add provider loading, permission, empty, unavailable, and error states
 - [ ] Add reduced-motion, focus-order, screen-reader, and contrast audit

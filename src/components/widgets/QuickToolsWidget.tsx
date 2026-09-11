@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { JsonFormatter } from './tools/JsonFormatter';
 import { Base64Converter } from './tools/Base64Converter';
 import { UrlParser } from './tools/UrlParser';
@@ -17,27 +17,53 @@ import { ColorConverter } from './tools/ColorConverter';
 import { CronParser } from './tools/CronParser';
 import { Wrench, TerminalSquare, Key, Link, Brackets, Fingerprint, Lock, Clock, Calculator as CalcIcon, RefreshCw, BarChart2, QrCode, Timer, Regex, Palette, CalendarClock } from 'lucide-react';
 
-export const QuickToolsWidget = () => {
-  const [activeTool, setActiveTool] = useState<string | null>(null);
+export const QuickToolsWidget = ({ initialTool = null }: { initialTool?: string | null }) => {
+  const [activeTool, setActiveTool] = useState<string | null>(initialTool);
+  const [category, setCategory] = useState('All');
 
   const tools = [
-    { id: 'json', name: 'JSON', icon: Brackets, component: <JsonFormatter /> },
-    { id: 'base64', name: 'Base64', icon: RefreshCw, component: <Base64Converter /> },
-    { id: 'url', name: 'URL', icon: Link, component: <UrlParser /> },
-    { id: 'jwt', name: 'JWT', icon: Key, component: <JwtDecoder /> },
-    { id: 'uuid', name: 'UUID', icon: Fingerprint, component: <UuidGenerator /> },
-    { id: 'hash', name: 'Hash', icon: Lock, component: <HashGenerator /> },
-    { id: 'time', name: 'Time', icon: Clock, component: <TimestampConverter /> },
-    { id: 'calc', name: 'Calc', icon: CalcIcon, component: <Calculator /> },
-    { id: 'pass', name: 'Pass', icon: Key, component: <PasswordGenerator /> },
-    { id: 'unit', name: 'Unit', icon: RefreshCw, component: <UnitConverter /> },
-    { id: 'text', name: 'Stats', icon: BarChart2, component: <TextStatistics /> },
-    { id: 'qr', name: 'QR', icon: QrCode, component: <QrGenerator /> },
-    { id: 'cdown', name: 'Timer', icon: Timer, component: <CountdownTimer /> },
-    { id: 'regex', name: 'Regex', icon: Regex, component: <RegexTester /> },
-    { id: 'color', name: 'Color', icon: Palette, component: <ColorConverter /> },
-    { id: 'cron', name: 'Cron', icon: CalendarClock, component: <CronParser /> },
+    { id: 'json', name: 'JSON', category: 'Format', icon: Brackets, component: <JsonFormatter /> },
+    { id: 'base64', name: 'Base64', category: 'Encode', icon: RefreshCw, component: <Base64Converter /> },
+    { id: 'url', name: 'URL', category: 'Encode', icon: Link, component: <UrlParser /> },
+    { id: 'jwt', name: 'JWT', category: 'Inspect', icon: Key, component: <JwtDecoder /> },
+    { id: 'uuid', name: 'UUID', category: 'Generate', icon: Fingerprint, component: <UuidGenerator /> },
+    { id: 'hash', name: 'Hash', category: 'Inspect', icon: Lock, component: <HashGenerator /> },
+    { id: 'time', name: 'Time', category: 'Calculate', icon: Clock, component: <TimestampConverter /> },
+    { id: 'calc', name: 'Calc', category: 'Calculate', icon: CalcIcon, component: <Calculator /> },
+    { id: 'pass', name: 'Pass', category: 'Generate', icon: Key, component: <PasswordGenerator /> },
+    { id: 'unit', name: 'Unit', category: 'Calculate', icon: RefreshCw, component: <UnitConverter /> },
+    { id: 'text', name: 'Stats', category: 'Inspect', icon: BarChart2, component: <TextStatistics /> },
+    { id: 'qr', name: 'QR', category: 'Generate', icon: QrCode, component: <QrGenerator /> },
+    { id: 'cdown', name: 'Timer', category: 'Calculate', icon: Timer, component: <CountdownTimer /> },
+    { id: 'regex', name: 'Regex', category: 'Inspect', icon: Regex, component: <RegexTester /> },
+    { id: 'color', name: 'Color', category: 'Inspect', icon: Palette, component: <ColorConverter /> },
+    { id: 'cron', name: 'Cron', category: 'Calculate', icon: CalendarClock, component: <CronParser /> },
   ];
+
+  useEffect(() => {
+    if (initialTool) setActiveTool(initialTool);
+  }, [initialTool]);
+
+  useEffect(() => {
+    const handleOpenTool = (event: Event) => {
+      const toolId = (event as CustomEvent<string>).detail;
+      if (!tools.some((tool) => tool.id === toolId)) return;
+      setActiveTool(toolId);
+      setCategory('All');
+    };
+    const handleOpenToolbox = () => {
+      setActiveTool(null);
+      setCategory('All');
+    };
+    window.addEventListener('command-center:open-tool', handleOpenTool);
+    window.addEventListener('command-center:open-toolbox', handleOpenToolbox);
+    return () => {
+      window.removeEventListener('command-center:open-tool', handleOpenTool);
+      window.removeEventListener('command-center:open-toolbox', handleOpenToolbox);
+    };
+  }, []);
+
+  const visibleTools = useMemo(() => category === 'All' ? tools : tools.filter((tool) => tool.category === category), [category]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -46,9 +72,17 @@ export const QuickToolsWidget = () => {
         <span className="command-kicker text-[var(--widget-accent)]">DEVELOPER UTILITIES</span>
       </div>
 
+      {!activeTool && <div className="flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Developer tool categories">
+        {['All', 'Format', 'Encode', 'Generate', 'Inspect', 'Calculate'].map((item) => (
+          <button key={item} type="button" role="tab" aria-selected={category === item} onClick={() => setCategory(item)} className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider transition-colors ${category === item ? 'bg-[var(--widget-accent)] text-neutral-950' : 'border border-[var(--surface-line)] text-[var(--page-muted)] hover:text-[var(--page-ink)]'}`}>
+            {item}
+          </button>
+        ))}
+      </div>}
+
       {!activeTool ? (
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
-          {tools.map(tool => {
+          {visibleTools.map(tool => {
             const Icon = tool.icon;
             return (
               <button

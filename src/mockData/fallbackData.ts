@@ -39,7 +39,6 @@ export interface FallbackAnalyticsItem {
 
 export const fallbackBookmarks: FallbackBookmark[] = [
   { id: 'dev-folder', title: 'Development', isFolder: true },
-  { id: '1', title: 'GitHub', url: 'https://github.com', parentId: 'dev-folder', usageCount: 45, category: 'dev', status: 'active', lastUsed: Date.now() - 100000 },
   { id: '2', title: 'React Documentation', url: 'https://react.dev', parentId: 'dev-folder', usageCount: 22, category: 'dev', status: 'active' },
   { id: '3', title: 'Tailwind CSS', url: 'https://tailwindcss.com', parentId: 'dev-folder', usageCount: 56, category: 'dev', status: 'active' },
   { id: '4', title: 'Figma', url: 'https://figma.com', usageCount: 15, category: 'design', status: 'active' },
@@ -54,14 +53,12 @@ export const fallbackBookmarks: FallbackBookmark[] = [
 export const fallbackTabs: FallbackTab[] = [
   { id: '1', title: 'Product Specification', url: 'https://ais-dev.run.app/guide/spec' },
   { id: '2', title: 'Technical Architecture', url: 'https://ais-dev.run.app/guide/tech' },
-  { id: '3', title: 'GitHub Issue #42', url: 'https://github.com/issues/42' },
   { id: '4', title: 'Figma Design', url: 'https://figma.com/design' },
   { id: '5', title: 'Calendar Meeting', url: 'https://meet.google.com' },
   { id: '6', title: 'Email Inbox', url: 'https://mail.google.com' },
 ];
 
 export const fallbackHistory: FallbackHistoryItem[] = [
-  { id: '1', title: 'GitHub Dashboard', url: 'https://github.com/dashboard' },
   { id: '2', title: 'React Hook Docs', url: 'https://react.dev/reference/react' },
   { id: '3', title: 'Tailwind Components', url: 'https://tailwindcss.com/docs' },
   { id: '4', title: 'Chrome DevTools', url: 'https://developer.chrome.com/docs/devtools/' },
@@ -76,7 +73,6 @@ export const fallbackRecentlyClosedTabs: FallbackClosedTab[] = [
 ];
 
 export const fallbackAnalytics: FallbackAnalyticsItem[] = [
-  { url: 'github.com', count: 42, timeSpentMs: 12000000, busiestHour: 10 },
   { url: 'react.dev', count: 28, timeSpentMs: 5000000, busiestHour: 14 },
   { url: 'tailwindcss.com', count: 19, timeSpentMs: 2000000, busiestHour: 15 },
   { url: 'figma.com', count: 17, timeSpentMs: 8000000, busiestHour: 11 },

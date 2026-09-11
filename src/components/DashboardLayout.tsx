@@ -35,6 +35,11 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const isVisible = isPinned || isHovered || !isIdle;
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, ' ');
+  const switchWorkspace = (workspaceId: string) => {
+    setIsHovered(true);
+    setCurrentWorkspace(workspaceId);
+  };
 
   return (
     <div className="command-shell min-h-screen overflow-x-hidden px-4 py-3 sm:px-8 sm:py-5" data-page="dashboard">
@@ -103,7 +108,9 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
                 <button
                   key={ws.id}
                   type="button"
-                  onClick={() => setCurrentWorkspace(ws.id)}
+                  onClick={() => switchWorkspace(ws.id)}
+                  aria-pressed={currentWorkspace === ws.id}
+                  title={`Switch to ${ws.name} workspace`}
                   className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
                     currentWorkspace === ws.id
                       ? 'bg-cyan-500 text-neutral-950 font-bold shadow-[0_0_12px_rgba(40,215,209,0.4)]'
@@ -162,6 +169,8 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
             <div className="flex items-center gap-2">
               <span className="command-kicker text-cyan-400">SYSTEM TIME & TELEMETRY</span>
               <span className="rounded bg-cyan-500/10 px-1.5 py-0.5 text-[9px] font-mono text-cyan-300 border border-cyan-500/20">LIVE</span>
+              <span className="command-kicker text-[var(--page-muted)]">LOCAL TIME</span>
+              <span className="rounded-full border border-[var(--accent-color)]/20 bg-[var(--accent-color)]/10 px-2 py-0.5 text-[9px] font-mono font-bold tracking-wider text-[var(--accent-color)]">{timezone}</span>
             </div>
             <ClockWidget />
           </div>

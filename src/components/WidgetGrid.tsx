@@ -3,17 +3,20 @@ import { motion } from 'framer-motion';
 import { useWidgetContext } from '../context/WidgetContext';
 import { WIDGET_MAP } from '../lib/widgetRegistry';
 import { useAppStore } from '../stores/appStore';
+import { WidgetErrorBoundary } from './WidgetErrorBoundary';
 
 export const WidgetGrid = () => {
   const { enabledWidgets } = useWidgetContext();
-  const { vimMode, widgetOrder, setWidgetOrder, reducedMotion } = useAppStore();
+  const { vimMode, widgetOrder, setWidgetOrder, reducedMotion, widgetSizes } = useAppStore();
   const [focusedIndex, setFocusedIndex] = useState(0);
   const widgetRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   const coreWidgets = ['bookmarks', 'tabs', 'tasks'];
+  const featuredWidgets = ['pomodoro', 'quickTools'];
   const fallbackOrder = [...coreWidgets, ...enabledWidgets.filter(id => !['clock', 'search', ...coreWidgets].includes(id))];
   const widgetIds = [...new Set([...widgetOrder, ...fallbackOrder])].filter((id) => enabledWidgets.includes(id) && WIDGET_MAP[id]);
-  const optionalWidgets = widgetIds.filter(id => !coreWidgets.includes(id));
+  const featuredIds = featuredWidgets.filter((id) => widgetIds.includes(id));
+  const optionalWidgets = widgetIds.filter(id => !coreWidgets.includes(id) && !featuredWidgets.includes(id));
   const [draggedWidget, setDraggedWidget] = useState<string | null>(null);
 
   useEffect(() => {
@@ -74,6 +77,7 @@ export const WidgetGrid = () => {
     const WidgetComponent = WIDGET_MAP[id];
     if (!WidgetComponent) return null;
     const accent = getWidgetAccent(id);
+    const size = widgetSizes[id] ?? 'standard';
 
     return (
       <motion.div
@@ -98,9 +102,11 @@ export const WidgetGrid = () => {
         aria-label={`${id} widget`}
         variants={itemVariants}
         data-accent={accent}
-        className={`command-widget group relative min-h-[160px] rounded-2xl p-5 sm:p-6 text-[var(--page-ink)] transition-all duration-300 shadow-lg ${reducedMotion ? '' : 'command-reveal'} ${reducedMotion ? '' : `command-reveal-delay-${(widgetIndex % 3) + 1}`}`}
+        className={`command-widget widget-size-${size} group relative min-h-[160px] rounded-2xl p-5 sm:p-6 text-[var(--page-ink)] transition-all duration-300 shadow-lg ${reducedMotion ? '' : 'command-reveal'} ${reducedMotion ? '' : `command-reveal-delay-${(widgetIndex % 3) + 1}`}`}
       >
-        <WidgetComponent />
+        <WidgetErrorBoundary widgetId={id}>
+          <WidgetComponent />
+        </WidgetErrorBoundary>
       </motion.div>
     );
   };
@@ -115,6 +121,12 @@ export const WidgetGrid = () => {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {coreWidgets.map(renderWidget)}
       </section>
+
+      {featuredIds.length > 0 && (
+        <section className="grid grid-cols-1 gap-6 lg:grid-cols-2" aria-label="Focus and developer tools">
+          {featuredIds.map(renderWidget)}
+        </section>
+      )}
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {optionalWidgets.map(renderWidget)}

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { useWidgetContext } from '../context/WidgetContext';
+import { ExtensionBridge } from '../services/ExtensionBridge';
+
+type SettingsSection = 'general' | 'appearance' | 'dashboard' | 'keyboard' | 'privacy' | 'integrations' | 'performance';
 
 export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const {
@@ -27,10 +30,20 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
     setCustomBackground,
     reducedMotion,
     setReducedMotion,
+    fontFamily,
+    setFontFamily,
+    spacingScale,
+    setSpacingScale,
+    radiusScale,
+    setRadiusScale,
+    animationIntensity,
+    setAnimationIntensity,
     layoutPresets,
     saveLayoutPreset,
     applyLayoutPreset,
     removeLayoutPreset,
+    widgetSizes,
+    setWidgetSize,
   } = useAppStore();
   const { enabledWidgets, setEnabledWidgets } = useWidgetContext();
   const [newWorkspaceName, setNewWorkspaceName] = useState('');
@@ -38,6 +51,8 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const [customCommandShortcut, setCustomCommandShortcut] = useState('');
   const [customCommandAction, setCustomCommandAction] = useState<'focus-search' | 'settings' | 'toggle-widgets' | 'reload'>('focus-search');
   const [layoutName, setLayoutName] = useState('');
+  const [activeSection, setActiveSection] = useState<SettingsSection>('general');
+  const extensionConnected = ExtensionBridge.isExtensionAvailable();
 
   if (!isOpen) return null;
 
@@ -109,8 +124,30 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
           <button type="button" onClick={onClose} aria-label="Close settings" className="text-xs font-medium text-neutral-400 hover:text-white bg-neutral-800 hover:bg-neutral-700 px-3 py-1.5 rounded-lg transition-colors">Close</button>
         </div>
 
+        <div className="flex flex-1 min-h-0 flex-col overflow-hidden sm:flex-row">
+          <nav className="flex shrink-0 gap-1 overflow-x-auto border-b border-neutral-800 p-3 sm:w-36 sm:flex-col sm:border-b-0 sm:border-r sm:p-4" aria-label="Settings sections">
+            {(['general', 'appearance', 'dashboard', 'keyboard', 'privacy', 'integrations', 'performance'] as SettingsSection[]).map((section) => (
+              <button
+                key={section}
+                type="button"
+                onClick={() => setActiveSection(section)}
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-left text-xs capitalize transition-colors ${activeSection === section ? 'bg-cyan-500/15 text-cyan-200' : 'text-neutral-500 hover:bg-neutral-800 hover:text-neutral-200'}`}
+              >
+                {section}
+              </button>
+            ))}
+          </nav>
+
         <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
-          <div>
+          {activeSection === 'general' && <div>
+            <label className="mb-2 block text-sm font-medium">General</label>
+            <div className="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3 text-xs text-neutral-400">
+              <p>Command Center keeps settings and productivity data in this browser by default.</p>
+              <p className="mt-2">Current workspace: <strong className="text-neutral-200">{currentWorkspace}</strong></p>
+            </div>
+          </div>}
+
+          <div hidden={activeSection !== 'keyboard'}>
             <label className="mb-2 block text-sm font-medium">Keyboard control</label>
             <div className="space-y-3 rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
               <label className="flex items-center justify-between gap-3 text-sm text-neutral-300">
@@ -148,7 +185,7 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
             </div>
           </div>
 
-          <div>
+          <div hidden={activeSection !== 'privacy'}>
             <label className="mb-2 block text-sm font-medium">Data</label>
             <div className="flex flex-wrap gap-2">
               <button type="button" onClick={exportData} className="rounded-lg border border-neutral-700 px-3 py-2 text-xs text-neutral-300">Export backup</button>
@@ -160,7 +197,7 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
             </div>
           </div>
 
-          <div>
+          <div hidden={activeSection !== 'appearance'}>
             <label className="mb-2 block text-sm font-medium">Appearance</label>
             <div className="space-y-3 rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
               <div className="grid grid-cols-2 gap-2">
@@ -168,11 +205,16 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
                 <label className="text-xs text-neutral-500">Background<select value={backgroundMode} onChange={(event) => setBackgroundMode(event.target.value as typeof backgroundMode)} className="mt-1 w-full rounded border border-neutral-800 bg-neutral-950 p-2 text-xs text-neutral-300"><option value="charcoal">Charcoal</option><option value="midnight">Midnight</option><option value="custom">Custom image</option></select></label>
               </div>
               {backgroundMode === 'custom' && <input value={customBackground} onChange={(event) => setCustomBackground(event.target.value)} placeholder="Image URL" className="w-full rounded border border-neutral-800 bg-neutral-950 p-2 text-xs text-neutral-300" />}
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <label className="text-xs text-neutral-500">Font<select value={fontFamily} onChange={(event) => setFontFamily(event.target.value as typeof fontFamily)} className="mt-1 w-full rounded border border-neutral-800 bg-neutral-950 p-2 text-xs text-neutral-300"><option value="sans">Sans</option><option value="mono">Mono</option><option value="serif">Serif</option></select></label>
+                <label className="text-xs text-neutral-500">Spacing<select value={spacingScale} onChange={(event) => setSpacingScale(event.target.value as typeof spacingScale)} className="mt-1 w-full rounded border border-neutral-800 bg-neutral-950 p-2 text-xs text-neutral-300"><option value="tight">Tight</option><option value="comfortable">Comfortable</option><option value="airy">Airy</option></select></label>
+                <label className="text-xs text-neutral-500">Corners<select value={radiusScale} onChange={(event) => setRadiusScale(event.target.value as typeof radiusScale)} className="mt-1 w-full rounded border border-neutral-800 bg-neutral-950 p-2 text-xs text-neutral-300"><option value="sharp">Sharp</option><option value="soft">Soft</option><option value="round">Round</option></select></label>
+              </div>
               <label className="flex items-center justify-between text-xs text-neutral-400">Reduce motion<input type="checkbox" checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} className="h-4 w-4 accent-cyan-500" /></label>
             </div>
           </div>
 
-          <div>
+          <div hidden={activeSection !== 'dashboard'}>
             <label className="mb-2 block text-sm font-medium">Layout presets</label>
             <div className="space-y-2 rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
               <div className="flex gap-2"><input value={layoutName} onChange={(event) => setLayoutName(event.target.value)} placeholder="Preset name" className="min-w-0 flex-1 rounded border border-neutral-800 bg-neutral-950 p-2 text-xs" /><button type="button" onClick={() => { saveLayoutPreset(layoutName); setLayoutName(''); }} className="rounded bg-cyan-500 px-2 text-xs text-black">Save</button></div>
@@ -180,7 +222,7 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
             </div>
           </div>
 
-          <div>
+          <div hidden={activeSection !== 'appearance'}>
             <label className="mb-2 block text-sm font-medium">Theme</label>
             <select
               value={theme}
@@ -193,22 +235,49 @@ export const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
             </select>
           </div>
 
-          <div>
+          <div hidden={activeSection !== 'dashboard'}>
             <label className="mb-2 block text-sm font-medium">Widgets</label>
             <div className="space-y-2">
-              {['workspaces', 'tasks', 'notes', 'bookmarks', 'tabs', 'history', 'pomodoro', 'analytics', 'sessionHeatmap', 'quickTools', 'statistics', 'sessions', 'tabGroups'].map((id) => (
-                <label key={id} className="flex items-center gap-2 text-sm text-neutral-300">
-                  <input
-                    type="checkbox"
-                    checked={enabledWidgets.includes(id)}
-                    onChange={() => toggleWidget(id)}
-                    className="h-4 w-4 accent-cyan-500"
-                  />
-                  <span className="capitalize">{id}</span>
-                </label>
+              {['tasks', 'notes', 'bookmarks', 'tabs', 'history', 'pomodoro', 'analytics', 'sessionHeatmap', 'statistics', 'sessions', 'tabGroups'].map((id) => (
+                <div key={id} className="flex items-center gap-2 text-sm text-neutral-300">
+                  <label className="flex min-w-0 flex-1 items-center gap-2"><input type="checkbox" checked={enabledWidgets.includes(id)} onChange={() => toggleWidget(id)} className="h-4 w-4 accent-cyan-500" /><span className="capitalize">{id}</span></label>
+                  <select aria-label={`${id} widget size`} value={widgetSizes[id] ?? 'standard'} onChange={(event) => setWidgetSize(id, event.target.value as 'compact' | 'standard' | 'wide')} className="rounded border border-neutral-800 bg-neutral-950 px-2 py-1 text-[10px] text-neutral-400"><option value="compact">Compact</option><option value="standard">Standard</option><option value="wide">Wide</option></select>
+                </div>
               ))}
             </div>
           </div>
+
+          <div hidden={activeSection !== 'privacy'}>
+            <label className="mb-2 block text-sm font-medium">Permission center</label>
+            <div className="space-y-2">
+              {[
+                ['Bookmarks', 'Read and organize browser bookmarks.'],
+                ['Tabs', 'Read, switch, and save open tabs.'],
+                ['History', 'Show local browsing activity and analytics.'],
+                ['Sessions', 'Restore recently closed browser sessions.'],
+              ].map(([name, reason]) => (
+                <div key={name} className="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+                  <div className="flex items-center justify-between text-sm text-neutral-200"><span>{name}</span><span className={extensionConnected ? 'text-emerald-400' : 'text-amber-300'}>{extensionConnected ? 'Connected' : 'Fallback mode'}</span></div>
+                  <p className="mt-1 text-xs text-neutral-500">{reason} Data stays local unless you connect an integration.</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div hidden={activeSection !== 'integrations'}>
+            <label className="mb-2 block text-sm font-medium">Integrations</label>
+            <div className="space-y-2">
+              {['Calendar', 'Weather'].map((name) => <div key={name} className="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3"><div className="flex items-center justify-between text-sm text-neutral-200"><span>{name}</span><span className="text-[10px] uppercase text-neutral-500">Not connected</span></div><p className="mt-1 text-xs text-neutral-500">Connect this provider explicitly before external data is requested.</p></div>)}
+            </div>
+          </div>
+
+          <div hidden={activeSection !== 'performance'}>
+            <label className="mb-2 block text-sm font-medium">Performance</label>
+            <div className="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
+              <label className="flex items-center justify-between text-xs text-neutral-400">Animation intensity<select value={animationIntensity} onChange={(event) => setAnimationIntensity(event.target.value as typeof animationIntensity)} className="rounded border border-neutral-800 bg-neutral-950 p-2 text-xs text-neutral-200"><option value="none">Off</option><option value="subtle">Subtle</option><option value="full">Full</option></select></label>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
